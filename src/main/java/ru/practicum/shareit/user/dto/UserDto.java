@@ -1,23 +1,17 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.dto;
 
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.Email;
-
-/**
- *
- * // TODO .
- */
-@Component
 @Data
-public class User {
+public class UserDto {
     private Long id;
     private String name;
     @Email
     private String email;
 
-    public User(Long id, String name, String email) {
+    public UserDto(Long id, String name, String email) {
         this.id = id;
         this.name = name;
         this.email = email;
