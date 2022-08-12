@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
  * // TODO .
  */
 @Data
-@Component
 public class ItemRequestDto {
     private Long id;
     private String description;

@@ -9,7 +9,6 @@ import javax.validation.constraints.Email;
  *
  * // TODO .
  */
-@Component
 @Data
 public class User {
     private Long id;

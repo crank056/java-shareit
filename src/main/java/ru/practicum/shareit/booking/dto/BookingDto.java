@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
  * // TODO .
  */
 @Data
-@Component
 public class BookingDto {
     private Long id;
     private LocalDateTime start;
