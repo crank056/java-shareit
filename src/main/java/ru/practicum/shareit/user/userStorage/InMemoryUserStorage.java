@@ -3,6 +3,7 @@ package ru.practicum.shareit.user.userStorage;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.exceprions.WrongEmailException;
 import ru.practicum.shareit.exceprions.WrongIdException;
 import ru.practicum.shareit.user.User;
 
@@ -18,6 +19,8 @@ public class InMemoryUserStorage implements UserStorage {
     @SneakyThrows
     @Override
     public User userAdd(User user) {
+        if (user.getEmail() == null) throw new WrongEmailException("Неверный формат email");
+        if(isNotDuplicateEmail(user.getEmail())) throw new WrongEmailException("Email уже существует");
         user.setId(getNextId());
         log.info("Размер хранилища аккаунтов до добавления: {}", users.size());
         users.add(user);
@@ -32,14 +35,14 @@ public class InMemoryUserStorage implements UserStorage {
 
     @SneakyThrows
     @Override
-    public User userRefresh(User user) {
-        User refreshingUser = getUserFromId(user.getId());
+    public User userRefresh(Long id, User user) {
+        User refreshingUser = getUserFromId(id);
         if (refreshingUser == null) throw new WrongIdException("Пользователь не найден");
         log.info("Размер хранилища аккаунтов до обновления: {}", users.size());
         refreshingUser.setEmail(user.getEmail());
         refreshingUser.setName(user.getName());
         log.info("Размер хранилища аккаунтов после обновления: {}", users.size());
-        return getUserFromId(user.getId());
+        return getUserFromId(id);
     }
 
     @Override
@@ -51,14 +54,24 @@ public class InMemoryUserStorage implements UserStorage {
     public User getUserFromId(long id) throws WrongIdException {
         User user = null;
         for (User findUser : users) {
-            if (findUser.getId() == id) user = findUser;
-            else throw new WrongIdException("Пользователь не найден");
+            if (findUser.getId() == id) {
+                user = findUser;
+            }
         }
+        if (user == null) throw new WrongIdException("Пользователь не найден");
         return user;
     }
 
     private long getNextId() {
         return lastUsedId++;
+    }
+
+    private boolean isNotDuplicateEmail(String email) {
+        boolean isDuplicate = false;
+        for (User user : users) {
+            if(user.getEmail() == email) isDuplicate = true;
+        }
+        return isDuplicate;
     }
 }
 

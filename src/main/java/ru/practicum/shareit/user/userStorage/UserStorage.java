@@ -11,7 +11,7 @@ public interface UserStorage {
 
     boolean userDelete(User user);
 
-    User userRefresh(User user);
+    User userRefresh(Long id, User user);
 
     List<User> getAllUsers();
 
