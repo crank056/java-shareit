@@ -3,6 +3,7 @@ package ru.practicum.shareit.user.userStorage;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.exceprions.NullEmailException;
 import ru.practicum.shareit.exceprions.WrongEmailException;
 import ru.practicum.shareit.exceprions.WrongIdException;
 import ru.practicum.shareit.user.User;
@@ -19,8 +20,7 @@ public class InMemoryUserStorage implements UserStorage {
     @SneakyThrows
     @Override
     public User userAdd(User user) {
-        if (user.getEmail() == null) throw new WrongEmailException("Неверный формат email");
-        if(isNotDuplicateEmail(user.getEmail())) throw new WrongEmailException("Email уже существует");
+        isValidEmail(user.getEmail());
         user.setId(getNextId());
         log.info("Размер хранилища аккаунтов до добавления: {}", users.size());
         users.add(user);
@@ -29,7 +29,9 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public boolean userDelete(User user) {
+    public boolean userDelete(Long id) throws WrongIdException {
+        User user = getUserFromId(id);
+
         return users.remove(user);
     }
 
@@ -39,8 +41,11 @@ public class InMemoryUserStorage implements UserStorage {
         User refreshingUser = getUserFromId(id);
         if (refreshingUser == null) throw new WrongIdException("Пользователь не найден");
         log.info("Размер хранилища аккаунтов до обновления: {}", users.size());
-        refreshingUser.setEmail(user.getEmail());
-        refreshingUser.setName(user.getName());
+        if (user.getEmail() != null) {
+            isValidEmail(user.getEmail());
+            refreshingUser.setEmail(user.getEmail());
+        }
+        if(user.getName() != null) refreshingUser.setName(user.getName());
         log.info("Размер хранилища аккаунтов после обновления: {}", users.size());
         return getUserFromId(id);
     }
@@ -66,12 +71,12 @@ public class InMemoryUserStorage implements UserStorage {
         return lastUsedId++;
     }
 
-    private boolean isNotDuplicateEmail(String email) {
-        boolean isDuplicate = false;
+    private void isValidEmail(String email) throws NullEmailException, WrongEmailException {
+        if (email == null || email.isEmpty()) throw new NullEmailException("Не указан email");
+        if (!email.contains("@") || email.isBlank()) throw new NullEmailException("Неверный формат email");
         for (User user : users) {
-            if(user.getEmail() == email) isDuplicate = true;
+            if (user.getEmail().equals(email)) throw new WrongEmailException("Email существует");
         }
-        return isDuplicate;
     }
 }
 

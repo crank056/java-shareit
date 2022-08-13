@@ -3,6 +3,7 @@ package ru.practicum.shareit.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exceprions.NullEmailException;
 import ru.practicum.shareit.exceprions.WrongEmailException;
 import ru.practicum.shareit.exceprions.WrongIdException;
 import ru.practicum.shareit.user.userStorage.UserStorage;
@@ -41,6 +42,12 @@ public class UserController {
         return userStorage.userAdd(user);
     }
 
+    @DeleteMapping("/{id}")
+    public boolean deleteFromId(@PathVariable Long id) throws WrongIdException {
+        log.info("Запрос DELETE /users получен, объект: {}", id);
+        return userStorage.userDelete(id);
+    }
+
     @GetMapping("/{id}")
     public User getUserFromId(@PathVariable long id) throws WrongIdException {
         log.info("Запрос GET /users/{id} получен: {}", id);
@@ -54,9 +61,15 @@ public class UserController {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, String> handleWrongEmailException(final WrongEmailException e) {
         return Map.of("Неверный формат email", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleNullEmailException(final NullEmailException e) {
+        return Map.of("Неверный email", e.getMessage());
     }
 
     @ExceptionHandler

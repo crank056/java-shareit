@@ -9,7 +9,7 @@ public interface UserStorage {
 
     User userAdd(User user);
 
-    boolean userDelete(User user);
+    boolean userDelete(Long id) throws WrongIdException;
 
     User userRefresh(Long id, User user);
 
