@@ -45,7 +45,7 @@ public class InMemoryUserStorage implements UserStorage {
             isValidEmail(user.getEmail());
             refreshingUser.setEmail(user.getEmail());
         }
-        if(user.getName() != null) refreshingUser.setName(user.getName());
+        if (user.getName() != null) refreshingUser.setName(user.getName());
         log.info("Размер хранилища аккаунтов после обновления: {}", users.size());
         return getUserFromId(id);
     }
@@ -71,7 +71,8 @@ public class InMemoryUserStorage implements UserStorage {
         return lastUsedId++;
     }
 
-    private void isValidEmail(String email) throws NullEmailException, WrongEmailException {
+    @SneakyThrows
+    private void isValidEmail(String email) {
         if (email == null || email.isEmpty()) throw new NullEmailException("Не указан email");
         if (!email.contains("@") || email.isBlank()) throw new NullEmailException("Неверный формат email");
         for (User user : users) {
