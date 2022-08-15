@@ -11,6 +11,9 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.userStorage.UserStorage;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @Slf4j
 public class ItemServiceImpl implements ItemService{
@@ -23,10 +26,31 @@ public class ItemServiceImpl implements ItemService{
         this.userStorage = userStorage;
     }
 
-    public Item addItem(ItemDto itemDto, Long id) throws WrongIdException {
+    public Item addItem(ItemDto itemDto, Long userId) throws WrongIdException {
         Item item = ItemMapper.toItem(itemDto);
-        item.setOwner(userStorage.getUserFromId(id));
+        item.setOwner(userStorage.getUserFromId(userId));
         log.info("Получен объект item в сервисе, объект: {}", item);
-        return itemStorage.addItem(ItemMapper.toItem(itemDto));
+        return itemStorage.addItem(item);
+    }
+
+    public Item refreshItem(ItemDto itemDto, Long id, Long userId) throws WrongIdException {
+        Item item = ItemMapper.toItem(itemDto);
+        if(!itemStorage.getItemFromId(id).getOwner().getId().equals(userId))
+            throw new WrongIdException("Неверный id хозяина вещи");
+        log.info("Получен объект item в сервисе, объект: {}", item);
+        return itemStorage.refreshItem(item, id);
+    }
+
+    public Item getItemFromId(Long id) throws WrongIdException {
+        return itemStorage.getItemFromId(id);
+    }
+
+    public List<ItemDto> getAllItemsFromUserId(Long id) throws WrongIdException {
+        if(userStorage.getUserFromId(id) == null) throw new WrongIdException("Пользователь не существует");
+        List<ItemDto> userItemsDto = new ArrayList<>();
+        for(Item item: itemStorage.getAllItemsFromUserId(id)){
+            userItemsDto.add(ItemMapper.toItemDto(item));
+        }
+        return userItemsDto;
     }
 }

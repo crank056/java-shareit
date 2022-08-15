@@ -11,6 +11,7 @@ import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,9 +29,27 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemDto addItem(@RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") Long id) throws WrongIdException {
+    public ItemDto addItem(@RequestBody ItemDto itemDto,
+                           @RequestHeader("X-Sharer-User-Id") Long userId) throws WrongIdException {
         log.info("Получен запрос POST, объект: {}", itemDto);
-        return ItemMapper.toItemDto(itemService.addItem(itemDto, id));
+        return ItemMapper.toItemDto(itemService.addItem(itemDto, userId));
+    }
+
+    @PatchMapping("/{id}")
+    public ItemDto refreshItem(@RequestBody ItemDto itemDto, @PathVariable Long id,
+                               @RequestHeader("X-Sharer-User-Id") Long userId) throws WrongIdException {
+        log.info("Получен запрос PATCH, объект: {}", itemDto);
+        return ItemMapper.toItemDto(itemService.refreshItem(itemDto, id, userId));
+    }
+
+    @GetMapping("/{id}")
+    public ItemDto getItemFromId(@PathVariable Long id) throws WrongIdException {
+        return ItemMapper.toItemDto(itemService.getItemFromId(id));
+    }
+
+    @GetMapping
+    public List<ItemDto> getAllItemsFromUserId(@RequestHeader("X-Sharer-User-Id") Long userId) throws WrongIdException {
+        return itemService.getAllItemsFromUserId(userId);
     }
 
     @ExceptionHandler

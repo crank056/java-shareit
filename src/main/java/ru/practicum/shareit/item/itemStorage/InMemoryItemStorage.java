@@ -24,6 +24,19 @@ public class InMemoryItemStorage implements ItemStorage{
         return getItemFromId(item.getId());
     }
 
+    public Item refreshItem(Item item, Long id) throws WrongIdException {
+        log.info("Получен объект item в хранилище, объект: {}", item);
+        Item refreshingItem = getItemFromId(id);
+        log.info("Размер хранилища вещей до обновления: {}", items.size());
+        if(item.getName() != null) refreshingItem.setName(item.getName());
+        if(item.getIsAvailable() != null) refreshingItem.setIsAvailable(item.getIsAvailable());
+        if(item.getDescription() != null) refreshingItem.setDescription(item.getDescription());
+        if(item.getOwner() != null) refreshingItem.setOwner(item.getOwner());
+        if(item.getRequest() != null) refreshingItem.setRequest(item.getRequest());
+        log.info("Размер хранилища вещей после обновления: {}", items.size());
+        return getItemFromId(id);
+    }
+
     public Item getItemFromId(Long id) throws WrongIdException {
         Item item = null;
         for(Item findItem: items) {
@@ -33,6 +46,16 @@ public class InMemoryItemStorage implements ItemStorage{
         }
         if(item == null) throw new WrongIdException("Вещь с таким id отсутствует");
         return item;
+    }
+
+    public List<Item> getAllItemsFromUserId(Long id) {
+        List<Item> userItems = new ArrayList<>();
+        for (Item item: items) {
+            if(item.getOwner().getId().equals(id)) {
+                userItems.add(item);
+            }
+        }
+        return userItems;
     }
 
     private long getNextId() {
