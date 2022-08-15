@@ -3,12 +3,11 @@ package ru.practicum.shareit.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exceprions.NullEmailException;
-import ru.practicum.shareit.exceprions.WrongEmailException;
-import ru.practicum.shareit.exceprions.WrongIdException;
+import ru.practicum.shareit.exceptions.NullEmailException;
+import ru.practicum.shareit.exceptions.WrongEmailException;
+import ru.practicum.shareit.exceptions.WrongIdException;
 import ru.practicum.shareit.user.userStorage.UserStorage;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

@@ -13,11 +13,11 @@ public class Item {
     private Long id;
     private String name;
     private String description;
-    private boolean isAvailable;
+    private Boolean isAvailable;
     private User owner;
     private ItemRequest request;
 
-    public Item(Long id, String name, String description, boolean isAvailable, User owner, ItemRequest request) {
+    public Item(Long id, String name, String description, Boolean isAvailable, User owner, ItemRequest request) {
         this.id = id;
         this.name = name;
         this.description = description;

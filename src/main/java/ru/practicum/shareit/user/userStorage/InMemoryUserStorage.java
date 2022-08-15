@@ -3,9 +3,9 @@ package ru.practicum.shareit.user.userStorage;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.exceprions.NullEmailException;
-import ru.practicum.shareit.exceprions.WrongEmailException;
-import ru.practicum.shareit.exceprions.WrongIdException;
+import ru.practicum.shareit.exceptions.NullEmailException;
+import ru.practicum.shareit.exceptions.WrongEmailException;
+import ru.practicum.shareit.exceptions.WrongIdException;
 import ru.practicum.shareit.user.User;
 
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package ru.practicum.shareit.user.userStorage;
 
-import ru.practicum.shareit.exceprions.WrongIdException;
+import ru.practicum.shareit.exceptions.WrongIdException;
 import ru.practicum.shareit.user.User;
 
 import java.util.List;
