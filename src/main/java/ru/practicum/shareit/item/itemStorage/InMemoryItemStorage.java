@@ -12,11 +12,12 @@ import java.util.List;
 
 @Repository
 @Slf4j
-public class InMemoryItemStorage implements ItemStorage{
-    List<Item> items = new ArrayList<>();
+public class InMemoryItemStorage implements ItemStorage {
+    private List<Item> items = new ArrayList<>();
     private static long lastUsedId = 1;
+
     @SneakyThrows
-    public Item addItem(Item item) throws WrongIdException {
+    public Item addItem(Item item) {
         isValid(item);
         item.setId(getNextId());
         log.info("Получен объект item в хранилище, объект: {}", item);
@@ -28,34 +29,38 @@ public class InMemoryItemStorage implements ItemStorage{
         log.info("Получен объект item в хранилище, объект: {}", item);
         Item refreshingItem = getItemFromId(id);
         log.info("Размер хранилища вещей до обновления: {}", items.size());
-        if(item.getName() != null) refreshingItem.setName(item.getName());
-        if(item.getIsAvailable() != null) refreshingItem.setIsAvailable(item.getIsAvailable());
-        if(item.getDescription() != null) refreshingItem.setDescription(item.getDescription());
-        if(item.getOwner() != null) refreshingItem.setOwner(item.getOwner());
-        if(item.getRequest() != null) refreshingItem.setRequest(item.getRequest());
+        if (item.getName() != null) refreshingItem.setName(item.getName());
+        if (item.getIsAvailable() != null) refreshingItem.setIsAvailable(item.getIsAvailable());
+        if (item.getDescription() != null) refreshingItem.setDescription(item.getDescription());
+        if (item.getOwner() != null) refreshingItem.setOwner(item.getOwner());
+        if (item.getRequest() != null) refreshingItem.setRequest(item.getRequest());
         log.info("Размер хранилища вещей после обновления: {}", items.size());
         return getItemFromId(id);
     }
 
     public Item getItemFromId(Long id) throws WrongIdException {
         Item item = null;
-        for(Item findItem: items) {
-            if(findItem.getId() == id) {
+        for (Item findItem : items) {
+            if (findItem.getId() == id) {
                 item = findItem;
             }
         }
-        if(item == null) throw new WrongIdException("Вещь с таким id отсутствует");
+        if (item == null) throw new WrongIdException("Вещь с таким id отсутствует");
         return item;
     }
 
     public List<Item> getAllItemsFromUserId(Long id) {
         List<Item> userItems = new ArrayList<>();
-        for (Item item: items) {
-            if(item.getOwner().getId().equals(id)) {
+        for (Item item : items) {
+            if (item.getOwner().getId().equals(id)) {
                 userItems.add(item);
             }
         }
         return userItems;
+    }
+
+    public List<Item> getAllItems() {
+        return items;
     }
 
     private long getNextId() {
@@ -63,7 +68,7 @@ public class InMemoryItemStorage implements ItemStorage{
     }
 
     private void isValid(Item item) throws NullItemFieldException {
-        if(item.getName().isBlank()||item.getName().isEmpty()||
+        if (item.getName().isBlank() || item.getName().isEmpty() ||
                 item.getIsAvailable() == null ||
                 item.getDescription() == null || item.getDescription().isBlank())
             throw new NullItemFieldException("Пустое или отсуствующее имя");

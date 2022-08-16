@@ -8,15 +8,11 @@ import ru.practicum.shareit.exceptions.NullItemFieldException;
 import ru.practicum.shareit.exceptions.WrongIdException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
 
 import java.util.List;
 import java.util.Map;
 
-/**
- * // TODO .
- */
 @RestController
 @RequestMapping("/items")
 @Slf4j
@@ -52,6 +48,11 @@ public class ItemController {
         return itemService.getAllItemsFromUserId(userId);
     }
 
+    @GetMapping("/search")
+    public List<ItemDto> getItemsFromKeyWord(@RequestParam String text) {
+        return itemService.getItemsFromKeyWord(text);
+    }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNullEmailException(final WrongIdException e) {
@@ -63,6 +64,4 @@ public class ItemController {
     public Map<String, String> handleNullEmailException(final NullItemFieldException e) {
         return Map.of("Пользователь вещи отсутствует", e.getMessage());
     }
-
-
 }

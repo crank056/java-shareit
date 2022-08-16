@@ -1,9 +1,9 @@
 package ru.practicum.shareit.user.dto;
 
 import lombok.Data;
-import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.Email;
+
 @Data
 public class UserDto {
     private Long id;

@@ -17,5 +17,7 @@ public interface ItemService {
 
     public List<ItemDto> getAllItemsFromUserId(Long id) throws WrongIdException;
 
+    public List<ItemDto> getItemsFromKeyWord(String text);
+
 
 }

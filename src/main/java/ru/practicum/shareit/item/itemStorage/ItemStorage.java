@@ -15,4 +15,6 @@ public interface ItemStorage {
     public Item getItemFromId(Long id) throws WrongIdException;
 
     public List<Item> getAllItemsFromUserId(Long id);
+
+    public List<Item> getAllItems();
 }

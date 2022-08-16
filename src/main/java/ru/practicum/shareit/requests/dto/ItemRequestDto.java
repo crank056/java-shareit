@@ -1,14 +1,10 @@
 package ru.practicum.shareit.requests.dto;
 
 import lombok.Data;
-import org.springframework.stereotype.Component;
 import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
 
-/**
- * // TODO .
- */
 @Data
 public class ItemRequestDto {
     private Long id;

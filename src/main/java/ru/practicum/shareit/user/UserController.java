@@ -11,9 +11,6 @@ import ru.practicum.shareit.user.userStorage.UserStorage;
 import java.util.List;
 import java.util.Map;
 
-/**
- * // TODO .
- */
 @RestController
 @Slf4j
 @RequestMapping(path = "/users")

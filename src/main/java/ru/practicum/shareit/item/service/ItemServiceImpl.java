@@ -16,7 +16,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class ItemServiceImpl implements ItemService{
+public class ItemServiceImpl implements ItemService {
     private ItemStorage itemStorage;
     private UserStorage userStorage;
 
@@ -35,7 +35,7 @@ public class ItemServiceImpl implements ItemService{
 
     public Item refreshItem(ItemDto itemDto, Long id, Long userId) throws WrongIdException {
         Item item = ItemMapper.toItem(itemDto);
-        if(!itemStorage.getItemFromId(id).getOwner().getId().equals(userId))
+        if (!itemStorage.getItemFromId(id).getOwner().getId().equals(userId))
             throw new WrongIdException("Неверный id хозяина вещи");
         log.info("Получен объект item в сервисе, объект: {}", item);
         return itemStorage.refreshItem(item, id);
@@ -46,11 +46,24 @@ public class ItemServiceImpl implements ItemService{
     }
 
     public List<ItemDto> getAllItemsFromUserId(Long id) throws WrongIdException {
-        if(userStorage.getUserFromId(id) == null) throw new WrongIdException("Пользователь не существует");
+        if (userStorage.getUserFromId(id) == null) throw new WrongIdException("Пользователь не существует");
         List<ItemDto> userItemsDto = new ArrayList<>();
-        for(Item item: itemStorage.getAllItemsFromUserId(id)){
+        for (Item item : itemStorage.getAllItemsFromUserId(id)) {
             userItemsDto.add(ItemMapper.toItemDto(item));
         }
         return userItemsDto;
+    }
+
+    public List<ItemDto> getItemsFromKeyWord(String text) {
+        List<Item> items = itemStorage.getAllItems();
+        List<ItemDto> itemsDto = new ArrayList<>();
+        for (Item item : items) {
+            if (item.getDescription().toLowerCase().contains(text.toLowerCase()) && !text.isBlank()) {
+                if (item.getIsAvailable()) {
+                    itemsDto.add(ItemMapper.toItemDto(item));
+                }
+            }
+        }
+        return itemsDto;
     }
 }
