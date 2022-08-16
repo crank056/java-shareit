@@ -17,7 +17,7 @@ import java.util.Map;
 @RequestMapping("/items")
 @Slf4j
 public class ItemController {
-    private ItemServiceImpl itemService;
+    private final ItemServiceImpl itemService;
 
     @Autowired
     public ItemController(ItemServiceImpl itemService) {

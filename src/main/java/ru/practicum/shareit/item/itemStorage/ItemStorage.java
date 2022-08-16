@@ -8,13 +8,13 @@ import java.util.List;
 
 @Repository
 public interface ItemStorage {
-    public Item addItem(Item item) throws WrongIdException;
+    Item addItem(Item item) throws WrongIdException;
 
-    public Item refreshItem(Item item, Long id) throws WrongIdException;
+    Item refreshItem(Item item, Long id) throws WrongIdException;
 
-    public Item getItemFromId(Long id) throws WrongIdException;
+    Item getItemFromId(Long id) throws WrongIdException;
 
-    public List<Item> getAllItemsFromUserId(Long id);
+    List<Item> getAllItemsFromUserId(Long id);
 
-    public List<Item> getAllItems();
+    List<Item> getAllItems();
 }

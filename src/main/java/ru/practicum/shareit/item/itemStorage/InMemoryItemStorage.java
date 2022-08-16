@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 @Slf4j
 public class InMemoryItemStorage implements ItemStorage {
-    private List<Item> items = new ArrayList<>();
+    private final List<Item> items = new ArrayList<>();
     private static long lastUsedId = 1;
 
     @SneakyThrows

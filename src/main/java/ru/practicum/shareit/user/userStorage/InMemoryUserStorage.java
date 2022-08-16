@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
-    private List<User> users = new ArrayList<>();
+    private final List<User> users = new ArrayList<>();
     private static long lastUsedId = 1;
 
     @SneakyThrows

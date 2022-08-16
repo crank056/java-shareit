@@ -9,15 +9,15 @@ import java.util.List;
 
 @Service
 public interface ItemService {
-    public Item addItem(ItemDto itemDto, Long userId) throws WrongIdException;
+    Item addItem(ItemDto itemDto, Long userId) throws WrongIdException;
 
-    public Item refreshItem(ItemDto itemDto, Long id, Long userId) throws WrongIdException;
+    Item refreshItem(ItemDto itemDto, Long id, Long userId) throws WrongIdException;
 
-    public Item getItemFromId(Long id) throws WrongIdException;
+    Item getItemFromId(Long id) throws WrongIdException;
 
-    public List<ItemDto> getAllItemsFromUserId(Long id) throws WrongIdException;
+    List<ItemDto> getAllItemsFromUserId(Long id) throws WrongIdException;
 
-    public List<ItemDto> getItemsFromKeyWord(String text);
+    List<ItemDto> getItemsFromKeyWord(String text);
 
 
 }

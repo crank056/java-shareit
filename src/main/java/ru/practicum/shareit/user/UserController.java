@@ -15,7 +15,7 @@ import java.util.Map;
 @Slf4j
 @RequestMapping(path = "/users")
 public class UserController {
-    private UserStorage userStorage;
+    private final UserStorage userStorage;
 
     public UserController(UserStorage userStorage) {
         this.userStorage = userStorage;
