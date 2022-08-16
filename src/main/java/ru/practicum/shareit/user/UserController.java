@@ -27,7 +27,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public User refreshUser(@RequestBody User user, @PathVariable Long id) throws WrongIdException {
+    public User refreshUser(@RequestBody User user, @PathVariable Long id) {
         log.info("Запрос PUT /users получен, объект: {}", user);
         return userStorage.userRefresh(id, user);
     }

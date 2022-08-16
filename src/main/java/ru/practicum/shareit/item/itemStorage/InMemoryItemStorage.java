@@ -41,7 +41,7 @@ public class InMemoryItemStorage implements ItemStorage {
     public Item getItemFromId(Long id) throws WrongIdException {
         Item item = null;
         for (Item findItem : items) {
-            if (findItem.getId() == id) {
+            if (findItem.getId().equals(id)) {
                 item = findItem;
             }
         }

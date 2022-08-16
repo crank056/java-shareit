@@ -8,7 +8,6 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.itemStorage.ItemStorage;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.userStorage.UserStorage;
 
 import java.util.ArrayList;
