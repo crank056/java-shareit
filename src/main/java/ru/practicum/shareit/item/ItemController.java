@@ -44,7 +44,8 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getAllItemsFromUserId(@RequestHeader("X-Sharer-User-Id") Long userId) throws WrongIdException {
+    public List<ItemDto> getAllItemsFromUserId(@RequestHeader("X-Sharer-User-Id") Long userId)
+            throws WrongIdException {
         return itemService.getAllItemsFromUserId(userId);
     }
 
