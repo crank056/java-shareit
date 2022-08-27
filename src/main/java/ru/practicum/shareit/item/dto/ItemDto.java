@@ -10,16 +10,16 @@ public class ItemDto {
     private String name;
     private String description;
     private Boolean available;
-    private User owner;
-    private ItemRequest request;
+    private Long ownerId;
+    private Long requestId;
 
-    public ItemDto(Long id, String name, String description, Boolean available, User owner, ItemRequest request) {
+    public ItemDto(Long id, String name, String description, Boolean available, Long ownerId, Long requestId) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.available = available;
-        this.owner = owner;
-        this.request = request;
+        this.ownerId = ownerId;
+        this.requestId = requestId;
     }
 }
 
