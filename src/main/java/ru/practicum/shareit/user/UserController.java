@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exceptions.NullEmailException;
 import ru.practicum.shareit.exceptions.WrongEmailException;
 import ru.practicum.shareit.exceptions.WrongIdException;
+import ru.practicum.shareit.user.userStorage.UserRepository;
 import ru.practicum.shareit.user.userStorage.UserStorage;
 
 import java.util.List;
@@ -15,39 +16,42 @@ import java.util.Map;
 @Slf4j
 @RequestMapping(path = "/users")
 public class UserController {
-    private final UserStorage userStorage;
+    private final UserRepository userRepository;
 
-    public UserController(UserStorage userStorage) {
-        this.userStorage = userStorage;
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+
     }
 
     @GetMapping
     public List<User> getAllUsers() {
-        return userStorage.getAllUsers();
+        return userRepository.findAll();
     }
 
     @PatchMapping("/{id}")
     public User refreshUser(@RequestBody User user, @PathVariable Long id) {
         log.info("Запрос PUT /users получен, объект: {}", user);
-        return userStorage.userRefresh(id, user);
+        user.setId(id);
+        return userRepository.save(user);
     }
 
     @PostMapping
     public User createUser(@RequestBody User user) {
         log.info("Запрос POST /users получен, объект: {}", user);
-        return userStorage.userAdd(user);
+        return userRepository.save(user);
     }
 
     @DeleteMapping("/{id}")
     public boolean deleteFromId(@PathVariable Long id) throws WrongIdException {
         log.info("Запрос DELETE /users получен, объект: {}", id);
-        return userStorage.userDelete(id);
+        userRepository.deleteById(id);
+        return !userRepository.existsById(id);
     }
 
     @GetMapping("/{id}")
     public User getUserFromId(@PathVariable long id) throws WrongIdException {
         log.info("Запрос GET /users/{id} получен: {}", id);
-        return userStorage.getUserFromId(id);
+        return userRepository.getReferenceById(id);
     }
 
     @ExceptionHandler

@@ -4,10 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.user.User;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data
@@ -16,11 +13,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ItemRequest {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column
+    @Column(nullable = false)
     private String description;
-    @Column(name = "user_id")
+    @Column(name = "user_id", nullable = false)
     private Long requesterId;
-    @Column
+    @Column(nullable = false)
     private LocalDateTime created;
 }

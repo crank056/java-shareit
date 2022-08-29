@@ -13,14 +13,15 @@ import java.time.LocalDateTime;
 @Table(name = "bookings")
 public class Booking {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "start_date")
+    @Column(name = "start_date", nullable = false)
     private LocalDateTime start;
-    @Column(name = "end_date")
+    @Column(name = "end_date", nullable = false)
     private LocalDateTime end;
-    @Column(name = "item_id")
+    @Column(name = "item_id", nullable = false)
     private Long itemId;
-    @Column(name = "booker_id")
+    @Column(name = "booker_id", nullable = false)
     private Long booker;
     @Enumerated(EnumType.STRING)
     private Status status;
