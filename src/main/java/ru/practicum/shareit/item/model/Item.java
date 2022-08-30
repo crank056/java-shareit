@@ -23,8 +23,6 @@ public class Item {
     private Boolean isAvailable;
     @Column(nullable = false)
     private Long ownerId;
-    @ElementCollection
-    @CollectionTable(name="users", joinColumns=@JoinColumn(name="id"))
     @Column(nullable = false)
     private Long requestId;
 
