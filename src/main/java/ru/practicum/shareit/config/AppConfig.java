@@ -16,7 +16,7 @@ import javax.persistence.EntityManagerFactory;
 import java.util.Properties;
 
 @Configuration
-@PropertySource("classpath:/application.properties")
+
 public class AppConfig {
 
 }
