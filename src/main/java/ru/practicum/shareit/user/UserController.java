@@ -1,13 +1,16 @@
 package ru.practicum.shareit.user;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exceptions.NullEmailException;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.exceptions.WrongEmailException;
 import ru.practicum.shareit.exceptions.WrongIdException;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.userStorage.UserRepository;
-import ru.practicum.shareit.user.userStorage.UserStorage;
 
 import java.util.List;
 import java.util.Map;
@@ -16,42 +19,40 @@ import java.util.Map;
 @Slf4j
 @RequestMapping(path = "/users")
 public class UserController {
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDto> getAllUsers() {
+        return userService.findAll();
     }
 
     @PatchMapping("/{id}")
-    public User refreshUser(@RequestBody User user, @PathVariable Long id) {
-        log.info("Запрос PUT /users получен, объект: {}", user);
-        user.setId(id);
-        return userRepository.save(user);
+    public UserDto refreshUser(@RequestBody UserDto userDto, @PathVariable Long id) throws ValidationException, WrongIdException {
+        log.info("Запрос PUT /users получен, объект: {}", userDto);
+        return userService.update(id, userDto);
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        log.info("Запрос POST /users получен, объект: {}", user);
-        return userRepository.save(user);
+    public UserDto createUser(@RequestBody UserDto userDto) throws ValidationException {
+        log.info("Запрос POST /users получен, объект: {}", userDto);
+        return userService.create(userDto);
     }
 
     @DeleteMapping("/{id}")
     public boolean deleteFromId(@PathVariable Long id) throws WrongIdException {
         log.info("Запрос DELETE /users получен, объект: {}", id);
-        userRepository.deleteById(id);
-        return !userRepository.existsById(id);
+        return userService.delete(id);
     }
 
     @GetMapping("/{id}")
-    public User getUserFromId(@PathVariable long id) throws WrongIdException {
+    public UserDto getUserFromId(@PathVariable long id) throws WrongIdException {
         log.info("Запрос GET /users/{id} получен: {}", id);
-        return userRepository.getReferenceById(id);
+        return userService.findById(id);
     }
 
     @ExceptionHandler
@@ -70,6 +71,12 @@ public class UserController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleNullEmailException(final NullEmailException e) {
         return Map.of("Неверный email", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleValidationException(final ValidationException e) {
+        return Map.of("Пользователь не прошел валидацию", e.getMessage());
     }
 
     @ExceptionHandler

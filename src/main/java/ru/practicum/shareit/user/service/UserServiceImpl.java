@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user.service;
 
-import ru.practicum.shareit.exceptions.WrongEmailException;
+import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.exceptions.WrongIdException;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -9,7 +10,7 @@ import ru.practicum.shareit.user.userStorage.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@Service
 public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
 
@@ -37,17 +38,40 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserDto create(UserDto user) {
-        return null;
+    public UserDto create(UserDto userDto) throws ValidationException {
+        userValidate(userDto);
+        return UserMapper.toUserDto(userRepository.save(UserMapper.toUser(userDto)));
     }
 
     @Override
-    public UserDto update(long userId, UserDto userDto) {
-        return null;
+    public UserDto update(long userId, UserDto userDto) throws WrongIdException, ValidationException {
+        User user = UserMapper.toUser(findById(userId));
+        if(userDto.getName() != null && !userDto.getName().isBlank()) {
+            user.setName(userDto.getName());
+        }
+        if(userDto.getEmail() != null && !userDto.getEmail().isBlank()) {
+            user.setEmail(userDto.getEmail());
+        }
+        userValidate(UserMapper.toUserDto(user));
+        return UserMapper.toUserDto(userRepository.save(user));
     }
 
     @Override
-    public void delete(long userId) {
-
+    public boolean delete(long userId) {
+        userRepository.deleteById(userId);
+        return userRepository.existsById(userId);
     }
-}
+
+    private void userValidate(UserDto userDto) throws ValidationException {
+        if (userDto == null) {
+            throw new ValidationException("");
+        }
+        if (userDto.getName() == null || userDto.getName().isEmpty()) {
+            throw new ValidationException("У мальчика нет имени");
+        }
+        if (userDto.getEmail() == null || userDto.getEmail().isEmpty() || !userDto.getEmail().contains("@")) {
+            throw new ValidationException("Неверный формат email");
+        }
+    }
+    }
+

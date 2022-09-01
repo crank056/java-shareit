@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user.service;
 
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.exceptions.WrongIdException;
 import ru.practicum.shareit.user.dto.UserDto;
 
@@ -10,9 +11,9 @@ public interface UserService {
 
     UserDto findById(long userId) throws WrongIdException;
 
-    UserDto create(UserDto user);
+    UserDto create(UserDto user) throws ValidationException;
 
-    UserDto update(long userId, UserDto userDto);
+    UserDto update(long userId, UserDto userDto) throws WrongIdException, ValidationException;
 
-    void delete(long userId);
+    boolean delete(long userId);
 }
