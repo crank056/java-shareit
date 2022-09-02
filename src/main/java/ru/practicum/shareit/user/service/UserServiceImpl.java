@@ -10,8 +10,9 @@ import ru.practicum.shareit.user.userStorage.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     public UserServiceImpl(UserRepository userRepository) {
@@ -22,7 +23,7 @@ public class UserServiceImpl implements UserService{
     public List<UserDto> findAll() {
         List<User> users = userRepository.findAll();
         List<UserDto> dtoUsers = new ArrayList<>();
-        for(User user: users) {
+        for (User user : users) {
             dtoUsers.add(UserMapper.toUserDto(user));
         }
         return dtoUsers;
@@ -31,7 +32,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserDto findById(long userId) throws WrongIdException {
         User user = null;
-        if(userRepository.findById(userId).isPresent()) {
+        if (userRepository.findById(userId).isPresent()) {
             user = userRepository.findById(userId).get();
         } else throw new WrongIdException("Нет пользователя с таким email");
         return UserMapper.toUserDto(user);
@@ -46,10 +47,10 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserDto update(long userId, UserDto userDto) throws WrongIdException, ValidationException {
         User user = UserMapper.toUser(findById(userId));
-        if(userDto.getName() != null && !userDto.getName().isBlank()) {
+        if (userDto.getName() != null && !userDto.getName().isBlank()) {
             user.setName(userDto.getName());
         }
-        if(userDto.getEmail() != null && !userDto.getEmail().isBlank()) {
+        if (userDto.getEmail() != null && !userDto.getEmail().isBlank()) {
             user.setEmail(userDto.getEmail());
         }
         userValidate(UserMapper.toUserDto(user));
@@ -73,5 +74,5 @@ public class UserServiceImpl implements UserService{
             throw new ValidationException("Неверный формат email");
         }
     }
-    }
+}
 

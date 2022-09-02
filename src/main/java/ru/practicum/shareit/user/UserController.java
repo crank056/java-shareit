@@ -10,7 +10,6 @@ import ru.practicum.shareit.exceptions.WrongEmailException;
 import ru.practicum.shareit.exceptions.WrongIdException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
-import ru.practicum.shareit.user.userStorage.UserRepository;
 
 import java.util.List;
 import java.util.Map;

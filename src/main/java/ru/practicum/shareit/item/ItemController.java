@@ -35,7 +35,8 @@ public class ItemController {
 
     @PatchMapping("/{id}")
     public ItemDto refreshItem(@RequestBody ItemDto itemDto, @PathVariable Long id,
-                               @RequestHeader("X-Sharer-User-Id") Long userId) throws WrongIdException, ValidationException {
+                               @RequestHeader("X-Sharer-User-Id") Long userId)
+            throws WrongIdException, ValidationException {
         log.info("Получен запрос PATCH, объект: {}", itemDto);
         return ItemMapper.toItemDto(itemService.refreshItem(itemDto, id, userId));
     }

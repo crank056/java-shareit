@@ -29,8 +29,8 @@ public class ItemServiceImpl implements ItemService {
     public Item addItem(ItemDto itemDto, Long userId) throws WrongIdException, ValidationException {
         validateItem(itemDto);
         Item item = ItemMapper.toItem(itemDto);
-        if(userId == null) throw new WrongIdException("Не передан id пользователя");
-        if(!userRepository.existsById(userId)) throw new WrongIdException("Нет такого пользователя");
+        if (userId == null) throw new WrongIdException("Не передан id пользователя");
+        if (!userRepository.existsById(userId)) throw new WrongIdException("Нет такого пользователя");
         item.setOwnerId(userRepository.getReferenceById(userId).getId());
         log.info("Получен объект item в сервисе, объект: {}", item);
         return itemRepository.save(item);
@@ -41,17 +41,17 @@ public class ItemServiceImpl implements ItemService {
         if (!itemRepository.getReferenceById(id).getOwnerId().equals(userId))
             throw new WrongIdException("Неверный id хозяина вещи");
         log.info("Получен объект item в сервисе, объект: {}", item);
-        if(itemDto.getName() != null) item.setName(itemDto.getName());
-        if(itemDto.getDescription() != null) item.setDescription(itemDto.getDescription());
-        if(itemDto.getAvailable() != null) item.setIsAvailable(itemDto.getAvailable());
-        if(itemDto.getOwnerId() != null) item.setOwnerId(itemDto.getOwnerId());
-        if(itemDto.getRequestId() != null) item.setRequestId(itemDto.getRequestId());
+        if (itemDto.getName() != null) item.setName(itemDto.getName());
+        if (itemDto.getDescription() != null) item.setDescription(itemDto.getDescription());
+        if (itemDto.getAvailable() != null) item.setIsAvailable(itemDto.getAvailable());
+        if (itemDto.getOwnerId() != null) item.setOwnerId(itemDto.getOwnerId());
+        if (itemDto.getRequestId() != null) item.setRequestId(itemDto.getRequestId());
         validateItem(ItemMapper.toItemDto(item));
         return itemRepository.save(item);
     }
 
     public Item getItemFromId(Long id) throws WrongIdException {
-        if(!itemRepository.existsById(id)) throw new WrongIdException("Неверный id или вещи несуществует");
+        if (!itemRepository.existsById(id)) throw new WrongIdException("Неверный id или вещи несуществует");
         return itemRepository.getReferenceById(id);
     }
 
@@ -80,10 +80,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private void validateItem(ItemDto itemDto) throws ValidationException {
-        if(itemDto.getAvailable() == null) throw new ValidationException("Нет информации о доступности вещи");
-        if(itemDto.getName() == null || itemDto.getName().isEmpty() || itemDto.getName().isBlank())
+        if (itemDto.getAvailable() == null) throw new ValidationException("Нет информации о доступности вещи");
+        if (itemDto.getName() == null || itemDto.getName().isEmpty() || itemDto.getName().isBlank())
             throw new ValidationException("Имя отсутствует");
-        if(itemDto.getDescription() == null || itemDto.getDescription().isBlank()
+        if (itemDto.getDescription() == null || itemDto.getDescription().isBlank()
                 || itemDto.getDescription().isEmpty()) throw new ValidationException("Отстутствует описание");
     }
 }
