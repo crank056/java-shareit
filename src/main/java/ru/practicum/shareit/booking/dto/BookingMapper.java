@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.dto;
 
 import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.User;
 
 public class BookingMapper {
     public static BookingDto toBookingDto(Booking booking) {
@@ -8,8 +10,8 @@ public class BookingMapper {
                 booking.getId(),
                 booking.getStart(),
                 booking.getEnd(),
-                booking.getItemId(),
-                booking.getBookerId(),
+                booking.getItem(),
+                booking.getBooker(),
                 booking.getStatus());
     }
 
@@ -18,8 +20,38 @@ public class BookingMapper {
                 bookingDto.getId(),
                 bookingDto.getStart(),
                 bookingDto.getEnd(),
-                bookingDto.getItemId(),
-                bookingDto.getBookerId(),
+                bookingDto.getItem(),
+                bookingDto.getBooker(),
+                bookingDto.getStatus());
+    }
+
+    public static BookingItemDto toBookingItemDto(Booking booking) {
+        return new BookingItemDto(
+                booking.getId(),
+                booking.getStart(),
+                booking.getEnd(),
+                booking.getItem().getId(),
+                booking.getBooker().getId(),
+                booking.getStatus());
+    }
+
+    public static  Booking buildBookingFromItemDto(BookingItemDto bookingItemDto, Item item, User booker) {
+        return  new Booking(
+                bookingItemDto.getId(),
+                bookingItemDto.getStart(),
+                bookingItemDto.getEnd(),
+                item,
+                booker,
+                bookingItemDto.getStatus());
+    }
+
+    public static  Booking buildBookingFromDto(BookingDto bookingDto, Item item, User booker) {
+        return  new Booking(
+                bookingDto.getId(),
+                bookingDto.getStart(),
+                bookingDto.getEnd(),
+                item,
+                booker,
                 bookingDto.getStatus());
     }
 }

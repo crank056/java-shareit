@@ -31,21 +31,21 @@ public class ItemServiceImpl implements ItemService {
         Item item = ItemMapper.toItem(itemDto);
         if (userId == null) throw new WrongIdException("Не передан id пользователя");
         if (!userRepository.existsById(userId)) throw new WrongIdException("Нет такого пользователя");
-        item.setOwnerId(userRepository.getReferenceById(userId).getId());
+        item.setOwner(userRepository.getReferenceById(userId));
         log.info("Получен объект item в сервисе, объект: {}", item);
         return itemRepository.save(item);
     }
 
     public Item refreshItem(ItemDto itemDto, Long id, Long userId) throws WrongIdException, ValidationException {
         Item item = itemRepository.getReferenceById(id);
-        if (!itemRepository.getReferenceById(id).getOwnerId().equals(userId))
+        if (!itemRepository.getReferenceById(id).getOwner().getId().equals(userId))
             throw new WrongIdException("Неверный id хозяина вещи");
         log.info("Получен объект item в сервисе, объект: {}", item);
         if (itemDto.getName() != null) item.setName(itemDto.getName());
         if (itemDto.getDescription() != null) item.setDescription(itemDto.getDescription());
         if (itemDto.getAvailable() != null) item.setIsAvailable(itemDto.getAvailable());
-        if (itemDto.getOwnerId() != null) item.setOwnerId(itemDto.getOwnerId());
-        if (itemDto.getRequestId() != null) item.setRequestId(itemDto.getRequestId());
+        if (itemDto.getOwner() != null) item.setOwner(itemDto.getOwner());
+        if (itemDto.getRequest() != null) item.setRequest(itemDto.getRequest());
         validateItem(ItemMapper.toItemDto(item));
         return itemRepository.save(item);
     }
@@ -59,7 +59,7 @@ public class ItemServiceImpl implements ItemService {
         if (userRepository.getReferenceById(id) == null) throw new WrongIdException("Пользователь не существует");
         List<ItemDto> userItemsDto = new ArrayList<>();
         for (Item item : itemRepository.findAll()) {
-            if (item.getOwnerId() == id) {
+            if (item.getOwner().getId() == id) {
                 userItemsDto.add(ItemMapper.toItemDto(item));
             }
         }
