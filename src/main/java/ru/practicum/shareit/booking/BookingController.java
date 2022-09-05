@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exception.model.ErrorResponse;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingItemDto;
 import ru.practicum.shareit.booking.service.BookingService;
@@ -84,8 +85,8 @@ public class BookingController {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleAvailableException(final ValidationException e) {
-        return Map.of("Бронирование не прошло валидацию", e.getMessage());
+    public ErrorResponse handleAvailableException(final ValidationException e) {
+        return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler

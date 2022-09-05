@@ -58,11 +58,9 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> getAllItemsFromUserId(Long id) throws WrongIdException {
         if (userRepository.getReferenceById(id) == null) throw new WrongIdException("Пользователь не существует");
         List<ItemDto> userItemsDto = new ArrayList<>();
-        for (Item item : itemRepository.findAll()) {
-            if (item.getOwner().getId() == id) {
+        for (Item item : itemRepository.findAllByOwnerOrderByIdAsc(userRepository.getReferenceById(id))) {
                 userItemsDto.add(ItemMapper.toItemDto(item));
             }
-        }
         return userItemsDto;
     }
 

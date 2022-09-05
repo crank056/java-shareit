@@ -90,7 +90,7 @@ public class BookingServiceImpl implements BookingService {
         if(!userRepository.existsById(userId)) throw new WrongIdException("Пользователя несуществует");
         switch (BookingState.valueOf(state)) {
             case ALL:
-                bookings = bookingRepository.findAllByBookerId(userId);
+                bookings = bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
                 break;
             case CURRENT:
                 bookings = bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(
@@ -118,7 +118,7 @@ public class BookingServiceImpl implements BookingService {
                 );
                 break;
             default:
-                throw new ValidationException("Неверные параметры");
+                throw new ValidationException(String.format("Unknown state: %s", BookingState.valueOf(state)));
         }
         List<BookingDto> bookingsDto = new ArrayList<>();
         for(Booking booking: bookings) {
@@ -162,7 +162,7 @@ public class BookingServiceImpl implements BookingService {
                 );
                 break;
             default:
-                throw new ValidationException("Неверные параметры");
+                throw new ValidationException(String.format("Unknown state: %s", BookingState.valueOf(state)));
         }
         List<BookingDto> bookingsDto = new ArrayList<>();
         for(Booking booking: bookings) {
