@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exceptions.NullItemFieldException;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.exceptions.WrongIdException;
+import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
@@ -47,7 +48,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getAllItemsFromUserId(@RequestHeader("X-Sharer-User-Id") Long userId)
+    public List<ItemBookingDto> getAllItemsFromUserId(@RequestHeader("X-Sharer-User-Id") Long userId)
             throws WrongIdException {
         return itemService.getAllItemsFromUserId(userId);
     }

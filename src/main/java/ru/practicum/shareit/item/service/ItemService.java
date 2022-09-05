@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.service;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.exceptions.WrongIdException;
+import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
@@ -16,7 +17,7 @@ public interface ItemService {
 
     Item getItemFromId(Long id) throws WrongIdException;
 
-    List<ItemDto> getAllItemsFromUserId(Long id) throws WrongIdException;
+    List<ItemBookingDto> getAllItemsFromUserId(Long id) throws WrongIdException;
 
     List<ItemDto> getItemsFromKeyWord(String text);
 
