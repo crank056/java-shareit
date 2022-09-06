@@ -28,7 +28,7 @@ public class ItemMapper {
         );
     }
 
-    public static ItemBookingDto toItemBookingDto(Item item, Booking last, Booking next) {
+    public static ItemBookingDto toItemBookingDto(Item item, BookingItemDto last, BookingItemDto next) {
         return new ItemBookingDto(
                 item.getId(),
                 item.getName(),

@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.dto.BookingItemDto;
+import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.exceptions.WrongIdException;
 import ru.practicum.shareit.item.dto.ItemBookingDto;
@@ -56,20 +58,29 @@ public class ItemServiceImpl implements ItemService {
         return itemRepository.save(item);
     }
 
-    public Item getItemFromId(Long id) throws WrongIdException {
+    public ItemBookingDto getItemFromId(Long userId, Long id) throws WrongIdException {
         if (!itemRepository.existsById(id)) throw new WrongIdException("Неверный id или вещи несуществует");
-        return itemRepository.getReferenceById(id);
+        Item item = itemRepository.getReferenceById(id);
+        List<Booking> bookings = bookingRepository.findAllByItemOrderByStartAsc(item);
+        BookingItemDto last = null;
+        BookingItemDto next = null;
+        if(bookings.size() >= 1) last = BookingMapper.toBookingItemDto(bookings.get(0));
+        if(bookings.size() >= 2) next = BookingMapper.toBookingItemDto(bookings.get(1));
+        ItemBookingDto itemBookingDto = ItemMapper.toItemBookingDto(item, last, next);
+        if(item.getOwner().getId() != userId) itemBookingDto = ItemMapper.toItemBookingDto(item, null, null);
+        return itemBookingDto;
     }
 
     public List<ItemBookingDto> getAllItemsFromUserId(Long id) throws WrongIdException {
         if (userRepository.getReferenceById(id) == null) throw new WrongIdException("Пользователь не существует");
         List<ItemBookingDto> userItemsDto = new ArrayList<>();
         for (Item item : itemRepository.findAllByOwnerOrderByIdAsc(userRepository.getReferenceById(id))) {
-            List<Booking> bookings = bookingRepository.findAllByItemOrderByStartDesc(item);
-            Booking last = null;
-            Booking next = null;
-            if(bookings )
-                userItemsDto.add(ItemMapper.toItemBookingDto(item, bookings.get(0), bookings.get(1)));
+            List<Booking> bookings = bookingRepository.findAllByItemOrderByStartAsc(item);
+            BookingItemDto last = null;
+            BookingItemDto next = null;
+            if(bookings.size() >= 1) last = BookingMapper.toBookingItemDto(bookings.get(0));
+            if(bookings.size() >= 2) next = BookingMapper.toBookingItemDto(bookings.get(1));
+                userItemsDto.add(ItemMapper.toItemBookingDto(item, last, next));
             }
         return userItemsDto;
     }

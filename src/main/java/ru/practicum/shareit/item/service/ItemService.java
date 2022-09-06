@@ -15,7 +15,7 @@ public interface ItemService {
 
     Item refreshItem(ItemDto itemDto, Long id, Long userId) throws WrongIdException, ValidationException;
 
-    Item getItemFromId(Long id) throws WrongIdException;
+    ItemBookingDto getItemFromId(Long userId, Long id) throws WrongIdException;
 
     List<ItemBookingDto> getAllItemsFromUserId(Long id) throws WrongIdException;
 

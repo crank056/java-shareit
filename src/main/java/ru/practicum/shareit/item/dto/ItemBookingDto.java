@@ -19,6 +19,6 @@ public class ItemBookingDto {
         private Boolean available;
         private User owner;
         private ItemRequest request;
-        private Booking lastBooking;
-        private Booking nextBooking;
+        private BookingItemDto lastBooking;
+        private BookingItemDto nextBooking;
 }

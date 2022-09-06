@@ -43,8 +43,9 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ItemDto getItemFromId(@PathVariable Long id) throws WrongIdException {
-        return ItemMapper.toItemDto(itemService.getItemFromId(id));
+    public ItemBookingDto getItemFromId(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable Long id)
+            throws WrongIdException {
+        return itemService.getItemFromId(userId, id);
     }
 
     @GetMapping
