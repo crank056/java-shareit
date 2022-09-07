@@ -15,16 +15,6 @@ public class BookingMapper {
                 booking.getStatus());
     }
 
-    public static Booking toBooking(BookingDto bookingDto) {
-        return new Booking(
-                bookingDto.getId(),
-                bookingDto.getStart(),
-                bookingDto.getEnd(),
-                bookingDto.getItem(),
-                bookingDto.getBooker(),
-                bookingDto.getStatus());
-    }
-
     public static BookingItemDto toBookingItemDto(Booking booking) {
         return new BookingItemDto(
                 booking.getId(),
@@ -43,15 +33,5 @@ public class BookingMapper {
                 item,
                 booker,
                 bookingItemDto.getStatus());
-    }
-
-    public static  Booking buildBookingFromDto(BookingDto bookingDto, Item item, User booker) {
-        return  new Booking(
-                bookingDto.getId(),
-                bookingDto.getStart(),
-                bookingDto.getEnd(),
-                item,
-                booker,
-                bookingDto.getStatus());
     }
 }

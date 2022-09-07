@@ -7,15 +7,17 @@ import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingItemDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.exceptions.AccessException;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.exceptions.WrongIdException;
-import ru.practicum.shareit.item.dto.ItemBookingDto;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.item.itemRepository.ItemRepository;
+import ru.practicum.shareit.item.Repository.CommentRepository;
+import ru.practicum.shareit.item.dto.*;
+import ru.practicum.shareit.item.Repository.ItemRepository;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.userStorage.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,14 +26,15 @@ import java.util.List;
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
-
     private final BookingRepository bookingRepository;
+    private final CommentRepository commentRepository;
 
     @Autowired
-    public ItemServiceImpl(ItemRepository itemRepository, UserRepository userRepository, BookingRepository bookingRepository) {
+    public ItemServiceImpl(ItemRepository itemRepository, UserRepository userRepository, BookingRepository bookingRepository, CommentRepository commentRepository) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
+        this.commentRepository = commentRepository;
     }
 
     public Item addItem(ItemDto itemDto, Long userId) throws WrongIdException, ValidationException {
@@ -64,24 +67,35 @@ public class ItemServiceImpl implements ItemService {
         List<Booking> bookings = bookingRepository.findAllByItemOrderByStartAsc(item);
         BookingItemDto last = null;
         BookingItemDto next = null;
-        if(bookings.size() >= 1) last = BookingMapper.toBookingItemDto(bookings.get(0));
-        if(bookings.size() >= 2) next = BookingMapper.toBookingItemDto(bookings.get(1));
-        ItemBookingDto itemBookingDto = ItemMapper.toItemBookingDto(item, last, next);
-        if(item.getOwner().getId() != userId) itemBookingDto = ItemMapper.toItemBookingDto(item, null, null);
+        List<Comment> comments = commentRepository.findAllByItemOrderByCreatedAsc(item);
+        List<CommentDto> commentsDto = new ArrayList<>();
+        for (Comment comment : comments) {
+            commentsDto.add(CommentMapper.toCommentDto(comment));
+        }
+        if (bookings.size() >= 1) last = BookingMapper.toBookingItemDto(bookings.get(0));
+        if (bookings.size() >= 2) next = BookingMapper.toBookingItemDto(bookings.get(1));
+        ItemBookingDto itemBookingDto = ItemMapper.toItemBookingDto(item, last, next, commentsDto);
+        if (!item.getOwner().getId().equals(userId))
+            itemBookingDto = ItemMapper.toItemBookingDto(item, null, null, commentsDto);
         return itemBookingDto;
     }
 
     public List<ItemBookingDto> getAllItemsFromUserId(Long id) throws WrongIdException {
-        if (userRepository.getReferenceById(id) == null) throw new WrongIdException("Пользователь не существует");
+        if (!userRepository.existsById(id)) throw new WrongIdException("Пользователь не существует");
         List<ItemBookingDto> userItemsDto = new ArrayList<>();
         for (Item item : itemRepository.findAllByOwnerOrderByIdAsc(userRepository.getReferenceById(id))) {
+            List<Comment> comments = commentRepository.findAllByItemOrderByCreatedAsc(item);
+            List<CommentDto> commentsDto = new ArrayList<>();
+            for (Comment comment : comments) {
+                commentsDto.add(CommentMapper.toCommentDto(comment));
+            }
             List<Booking> bookings = bookingRepository.findAllByItemOrderByStartAsc(item);
             BookingItemDto last = null;
             BookingItemDto next = null;
-            if(bookings.size() >= 1) last = BookingMapper.toBookingItemDto(bookings.get(0));
-            if(bookings.size() >= 2) next = BookingMapper.toBookingItemDto(bookings.get(1));
-                userItemsDto.add(ItemMapper.toItemBookingDto(item, last, next));
-            }
+            if (bookings.size() >= 1) last = BookingMapper.toBookingItemDto(bookings.get(0));
+            if (bookings.size() >= 2) next = BookingMapper.toBookingItemDto(bookings.get(1));
+            userItemsDto.add(ItemMapper.toItemBookingDto(item, last, next, commentsDto));
+        }
         return userItemsDto;
     }
 
@@ -104,5 +118,17 @@ public class ItemServiceImpl implements ItemService {
             throw new ValidationException("Имя отсутствует");
         if (itemDto.getDescription() == null || itemDto.getDescription().isBlank()
                 || itemDto.getDescription().isEmpty()) throw new ValidationException("Отстутствует описание");
+    }
+
+    public CommentDto addComment(Comment comment, Long itemId, Long userId) throws AccessException, ValidationException {
+        if (comment.getText().isBlank() || comment.getText().isEmpty())
+            throw new ValidationException("Комментарий не может быть пустым");
+        List<Booking> bookings = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(
+                userId, LocalDateTime.now());
+        if (bookings.size() == 0) throw new AccessException("Вы не брали вещь в аренду");
+        comment.setItem(itemRepository.getReferenceById(itemId));
+        comment.setUser(userRepository.getReferenceById(userId));
+        comment.setCreated(LocalDateTime.now());
+        return CommentMapper.toCommentDto(commentRepository.save(comment));
     }
 }

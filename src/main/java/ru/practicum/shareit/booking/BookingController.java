@@ -4,13 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exception.model.ErrorResponse;
+import ru.practicum.shareit.exceptions.ErrorResponse;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingItemDto;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.exceptions.*;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +17,6 @@ import java.util.Map;
 @RequestMapping(path = "/bookings")
 @Slf4j
 public class BookingController {
-
     private final BookingService bookingService;
 
     @Autowired
@@ -94,12 +92,4 @@ public class BookingController {
     public Map<String, String> handleAvailableException(final AccessException e) {
         return Map.of("Ошибка доступа", e.getMessage());
     }
-
-
-
-
-
-
-
-
 }

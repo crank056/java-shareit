@@ -4,12 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exceptions.AccessException;
 import ru.practicum.shareit.exceptions.NullItemFieldException;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.exceptions.WrongIdException;
-import ru.practicum.shareit.item.dto.ItemBookingDto;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.dto.*;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
 
 import java.util.List;
@@ -32,6 +32,15 @@ public class ItemController {
             throws WrongIdException, ValidationException {
         log.info("Получен запрос POST, объект: {}", itemDto);
         return ItemMapper.toItemDto(itemService.addItem(itemDto, userId));
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(@RequestBody Comment comment,
+                                 @PathVariable Long itemId,
+                                 @RequestHeader("X-Sharer-User-Id") Long userId)
+            throws WrongIdException, ValidationException, AccessException {
+        log.info("Получен запрос POST, объект: {}", comment);
+        return itemService.addComment(comment, itemId, userId);
     }
 
     @PatchMapping("/{id}")
@@ -77,5 +86,9 @@ public class ItemController {
         return Map.of("Вещь не прошла валидацию", e.getMessage());
     }
 
-
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleAccessException(final AccessException e) {
+        return Map.of("Ошибка доступа", e.getMessage());
+    }
 }

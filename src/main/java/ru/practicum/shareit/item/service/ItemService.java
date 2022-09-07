@@ -1,10 +1,13 @@
 package ru.practicum.shareit.item.service;
 
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exceptions.AccessException;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.exceptions.WrongIdException;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
@@ -21,5 +24,5 @@ public interface ItemService {
 
     List<ItemDto> getItemsFromKeyWord(String text);
 
-
+    CommentDto addComment(Comment comment, Long itemId, Long userId) throws AccessException, ValidationException;
 }

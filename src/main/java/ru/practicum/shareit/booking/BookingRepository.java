@@ -40,10 +40,4 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "WHERE b.item.id = i.id AND i.owner = :owner " +
             "ORDER BY b.start DESC")
     List<Booking> findAllByOwner(@Param("owner") User owner);
-
-    @Query("SELECT b FROM Booking b, Item i " +
-            "WHERE b.item.id = i.id AND i.owner = :owner AND b.start > :date " +
-            "ORDER BY b.start DESC")
-    List<Booking> findAllByOwnerFuture(@Param("owner") User owner, @Param("date") LocalDateTime date);
-
 }
