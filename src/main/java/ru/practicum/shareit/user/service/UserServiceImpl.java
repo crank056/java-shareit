@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto create(UserDto userDto) throws ValidationException {
-        userValidate(userDto);
+        validateUser(userDto);
         return UserMapper.toUserDto(userRepository.save(UserMapper.toUser(userDto)));
     }
 
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
         if (userDto.getEmail() != null && !userDto.getEmail().isBlank()) {
             user.setEmail(userDto.getEmail());
         }
-        userValidate(UserMapper.toUserDto(user));
+        validateUser(UserMapper.toUserDto(user));
         return UserMapper.toUserDto(userRepository.save(user));
     }
 
@@ -63,12 +63,12 @@ public class UserServiceImpl implements UserService {
         return userRepository.existsById(userId);
     }
 
-    private void userValidate(UserDto userDto) throws ValidationException {
+    private void validateUser(UserDto userDto) throws ValidationException {
         if (userDto == null) {
             throw new ValidationException("");
         }
         if (userDto.getName() == null || userDto.getName().isEmpty()) {
-            throw new ValidationException("У мальчика нет имени");
+            throw new ValidationException("Имя пользователя не может быть пустым");
         }
         if (userDto.getEmail() == null || userDto.getEmail().isEmpty() || !userDto.getEmail().contains("@")) {
             throw new ValidationException("Неверный формат email");

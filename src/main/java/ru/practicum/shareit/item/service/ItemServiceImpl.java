@@ -30,7 +30,11 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
 
     @Autowired
-    public ItemServiceImpl(ItemRepository itemRepository, UserRepository userRepository, BookingRepository bookingRepository, CommentRepository commentRepository) {
+    public ItemServiceImpl(
+            ItemRepository itemRepository,
+            UserRepository userRepository,
+            BookingRepository bookingRepository,
+            CommentRepository commentRepository) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
@@ -47,7 +51,8 @@ public class ItemServiceImpl implements ItemService {
         return itemRepository.save(item);
     }
 
-    public Item refreshItem(ItemDto itemDto, Long id, Long userId) throws WrongIdException, ValidationException {
+    public Item refreshItem(ItemDto itemDto, Long id, Long userId)
+            throws WrongIdException, ValidationException {
         Item item = itemRepository.getReferenceById(id);
         if (!itemRepository.getReferenceById(id).getOwner().getId().equals(userId))
             throw new WrongIdException("Неверный id хозяина вещи");
@@ -64,7 +69,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemBookingDto getItemFromId(Long userId, Long id) throws WrongIdException {
         if (!itemRepository.existsById(id)) throw new WrongIdException("Неверный id или вещи несуществует");
         Item item = itemRepository.getReferenceById(id);
-        List<Booking> bookings = bookingRepository.findAllByItemOrderByStartAsc(item);
+        List<Booking> bookings = bookingRepository.findAllByItem(item);
         BookingItemDto last = null;
         BookingItemDto next = null;
         List<Comment> comments = commentRepository.findAllByItemOrderByCreatedAsc(item);
@@ -89,7 +94,7 @@ public class ItemServiceImpl implements ItemService {
             for (Comment comment : comments) {
                 commentsDto.add(CommentMapper.toCommentDto(comment));
             }
-            List<Booking> bookings = bookingRepository.findAllByItemOrderByStartAsc(item);
+            List<Booking> bookings = bookingRepository.findAllByItem(item);
             BookingItemDto last = null;
             BookingItemDto next = null;
             if (bookings.size() >= 1) last = BookingMapper.toBookingItemDto(bookings.get(0));
@@ -120,10 +125,11 @@ public class ItemServiceImpl implements ItemService {
                 || itemDto.getDescription().isEmpty()) throw new ValidationException("Отстутствует описание");
     }
 
-    public CommentDto addComment(Comment comment, Long itemId, Long userId) throws AccessException, ValidationException {
+    public CommentDto addComment(Comment comment, Long itemId, Long userId)
+            throws AccessException, ValidationException {
         if (comment.getText().isBlank() || comment.getText().isEmpty())
             throw new ValidationException("Комментарий не может быть пустым");
-        List<Booking> bookings = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(
+        List<Booking> bookings = bookingRepository.findAllByBookerIdInPast(
                 userId, LocalDateTime.now());
         if (bookings.size() == 0) throw new AccessException("Вы не брали вещь в аренду");
         comment.setItem(itemRepository.getReferenceById(itemId));

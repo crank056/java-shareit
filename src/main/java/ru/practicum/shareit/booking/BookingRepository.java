@@ -13,28 +13,74 @@ import java.util.List;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-    List<Booking> findAllByBookerIdOrderByStartDesc(Long userId);
 
-    List<Booking> findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(Long userId, LocalDateTime start, LocalDateTime end);
+    @Query("SELECT b FROM Booking b, Item i " +
+            "WHERE b.item.id = i.id AND b.booker.id = :bookerId " +
+            "ORDER BY b.start DESC")
+    List<Booking> findAllByBookerId(@Param("bookerId") Long bookerId);
 
-    List<Booking> findAllByBookerIdAndEndBeforeOrderByStartDesc(Long userId, LocalDateTime end);
+    @Query("SELECT b FROM Booking b, Item i " +
+            "WHERE b.item.id = i.id AND b.booker.id = :bookerId AND b.start < :start AND b.end > :end " +
+            "ORDER BY b.start DESC")
+    List<Booking> findAllByBookerIdInCurrent(
+            @Param("bookerId") Long bookerId,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end);
 
-    List<Booking> findAllByBookerIdAndStartAfterAndEndAfterOrderByStartDesc(Long userId, LocalDateTime start, LocalDateTime end);
+    @Query("SELECT b FROM Booking b, Item i " +
+            "WHERE b.item.id = i.id AND b.booker.id = :bookerId AND b.end < :end " +
+            "ORDER BY b.start DESC")
+    List<Booking> findAllByBookerIdInPast(
+            @Param("bookerId") Long bookerId,
+            @Param("end") LocalDateTime end);
 
-    List<Booking> findAllByBookerIdAndStatusOrderByStartDesc(Long userId, Status status);
+    @Query("SELECT b FROM Booking b, Item i " +
+            "WHERE b.item.id = i.id AND b.booker.id = :bookerId AND b.start > :start AND b.end > :end " +
+            "ORDER BY b.start DESC")
+    List<Booking> findAllByBookerIdInFuture(
+            @Param("bookerId") Long bookerId,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end);
 
-    List<Booking> findAllByItemOwnerAndStartBeforeAndEndAfterOrderByStartDesc(
-            User owner,
-            LocalDateTime start,
-            LocalDateTime end);
+    @Query("SELECT b FROM Booking b, Item i " +
+            "WHERE b.item.id = i.id AND b.booker.id = :bookerId AND b.status = :status " +
+            "ORDER BY b.start DESC")
+    List<Booking> findAllByBookerIdAndStatus(
+            @Param("bookerId") Long bookerId,
+            @Param("status") Status status);
 
-    List<Booking> findAllByItemOwnerAndEndBeforeOrderByStartDesc(User owner, LocalDateTime end);
+    @Query("SELECT b FROM Booking b, Item i " +
+            "WHERE b.item.id = i.id AND i.owner = :owner AND b.start < :start AND b.end > :end " +
+            "ORDER BY b.start DESC")
+    List<Booking> findAllByItemOwnerInCurrent(
+            @Param("owner") User owner,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end);
 
-    List<Booking> findAllByItemOwnerAndStartAfterAndEndAfterOrderByStartDesc(User owner, LocalDateTime start, LocalDateTime end);
+    @Query("SELECT b FROM Booking b, Item i " +
+            "WHERE b.item.id = i.id AND i.owner = :owner AND b.end < :end " +
+            "ORDER BY b.start DESC")
+    List<Booking> findAllByItemOwnerInPast(
+            @Param("owner") User owner,
+            @Param("end") LocalDateTime end);
 
-    List<Booking> findAllByItemOwnerAndStatusOrderByStartDesc(User owner, Status status);
+    @Query("SELECT b FROM Booking b, Item i " +
+            "WHERE b.item.id = i.id AND i.owner = :owner AND b.start > :start AND b.end > :end " +
+            "ORDER BY b.start DESC")
+    List<Booking> findAllByItemOwnerInFuture(
+            @Param("owner") User owner,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end);
 
-    List<Booking> findAllByItemOrderByStartAsc(Item item);
+    @Query("SELECT b FROM Booking b, Item i " +
+            "WHERE b.item.id = i.id AND i.owner = :owner AND b.status = :status " +
+            "ORDER BY b.start DESC")
+    List<Booking> findAllByItemOwnerAndStatus(@Param("owner") User owner, @Param("status") Status status);
+
+    @Query("SELECT b FROM Booking b, Item i" +
+            " WHERE b.item.id = i.id AND b.item = :item " +
+            "ORDER BY b.start ASC")
+    List<Booking> findAllByItem(@Param("item") Item item);
 
     @Query("SELECT b FROM Booking b, Item i " +
             "WHERE b.item.id = i.id AND i.owner = :owner " +

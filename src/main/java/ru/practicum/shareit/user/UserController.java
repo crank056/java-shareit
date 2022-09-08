@@ -31,7 +31,8 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public UserDto refreshUser(@RequestBody UserDto userDto, @PathVariable Long id) throws ValidationException, WrongIdException {
+    public UserDto refreshUser(@RequestBody UserDto userDto, @PathVariable Long id)
+            throws ValidationException, WrongIdException {
         log.info("Запрос PUT /users получен, объект: {}", userDto);
         return userService.update(id, userDto);
     }

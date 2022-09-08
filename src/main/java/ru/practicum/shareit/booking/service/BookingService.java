@@ -8,13 +8,18 @@ import java.util.List;
 
 public interface BookingService {
 
-    BookingDto createBooking(Long userId, BookingItemDto bookingItemDto) throws ValidationException, AvailableException;
+    BookingDto createBooking(Long userId, BookingItemDto bookingItemDto)
+            throws ValidationException, AvailableException;
 
-    BookingDto updateBooking(Long userId, Long bookingId, Boolean approved) throws WrongIdException, AccessException, ValidationException;
+    BookingDto updateBooking(Long userId, Long bookingId, Boolean approved)
+            throws WrongIdException, AccessException, ValidationException;
 
-    BookingDto getBookingFromId(Long userId, Long bookingId) throws AccessException, NotFoundException;
+    BookingDto getBookingFromId(Long userId, Long bookingId)
+            throws AccessException, NotFoundException;
 
-    List<BookingDto> getBookingsFromUserId(Long userId, String state) throws ValidationException, WrongIdException;
+    List<BookingDto> getBookingsFromUserId(Long userId, String state)
+            throws ValidationException, WrongIdException;
 
-    List<BookingDto> getBookingsFromOwnerId(Long ownerId, String state) throws WrongIdException, ValidationException;
+    List<BookingDto> getBookingsFromOwnerId(Long ownerId, String state)
+            throws WrongIdException, ValidationException;
 }

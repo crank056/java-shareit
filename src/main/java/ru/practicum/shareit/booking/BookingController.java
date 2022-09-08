@@ -66,19 +66,19 @@ public class BookingController {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleAvailableException(final AvailableException e) {
-        return Map.of("Вещь недоступна", e.getMessage());
+        return Map.of("Ошибка доступа", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> handleAvailableException(final WrongIdException e) {
-        return Map.of("Вещь недоступна", e.getMessage());
+        return Map.of("Ошибка запроса", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleAvailableException(final NotFoundException e) {
-        return Map.of("Вещь не найдена", e.getMessage());
+        return Map.of("Ошибка поиска", e.getMessage());
     }
 
     @ExceptionHandler
