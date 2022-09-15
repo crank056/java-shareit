@@ -8,7 +8,7 @@ import java.util.List;
 public interface RequestService {
     ItemRequestDto addRequest(Long userId, ItemRequestDto itemRequestDto);
 
-    List<ItemRequestDto> getRequest(Long userId);
+    List<ItemRequestDto> getAllRequests(Long userId);
 
     List<ItemRequestDto> getAllWithPagination(Integer from, Integer size);
 
