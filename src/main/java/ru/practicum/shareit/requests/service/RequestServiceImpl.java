@@ -64,7 +64,8 @@ public class RequestServiceImpl implements RequestService{
         if(from < 0 || size < 1) throw new ValidationException("Неверные значения формата");
         Pageable page = PageRequest.of(from / size, size, Sort.by("created").ascending());
         List<ItemRequestDto> itemRequestDto = new ArrayList<>();
-        List<ItemRequest> itemRequests = requestRepository.findAll(page).getContent();
+        List<ItemRequest> itemRequests = requestRepository.findAllByRequesterNotOrderByCreatedDesc(
+                page, getUserFromId(userId) ).getContent();
         for(ItemRequest itemRequest: itemRequests) {
             itemRequestDto.add(RequestMapper.ToDto(itemRequest, getItems(itemRequest.getId())));
         }

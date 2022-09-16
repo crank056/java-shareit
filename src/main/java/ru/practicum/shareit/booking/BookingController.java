@@ -50,17 +50,21 @@ public class BookingController {
     @GetMapping
     public List<BookingDto> getUserBookingsWithStatus(
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @RequestParam(value = "state", required = false, defaultValue = "ALL") String state)
+            @RequestParam(value = "state", required = false, defaultValue = "ALL") String state,
+            @RequestParam(required = false, defaultValue = "0") int from,
+            @RequestParam(required = false, defaultValue = "20") int size)
             throws ValidationException, WrongIdException {
-        return bookingService.getBookingsFromUserId(userId, state);
+        return bookingService.getBookingsFromUserId(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getAllUserBookings(
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @RequestParam(value = "state", required = false, defaultValue = "ALL") String state)
+            @RequestParam(value = "state", required = false, defaultValue = "ALL") String state,
+            @RequestParam(required = false, defaultValue = "0") int from,
+            @RequestParam(required = false, defaultValue = "20") int size)
             throws ValidationException, WrongIdException {
-        return bookingService.getBookingsFromOwnerId(userId, state);
+        return bookingService.getBookingsFromOwnerId(userId, state, from, size);
     }
 
     @ExceptionHandler

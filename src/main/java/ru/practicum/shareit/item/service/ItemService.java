@@ -20,9 +20,9 @@ public interface ItemService {
 
     ItemBookingDto getItemFromId(Long userId, Long id) throws WrongIdException;
 
-    List<ItemBookingDto> getAllItemsFromUserId(Long id) throws WrongIdException;
+    List<ItemBookingDto> getAllItemsFromUserId(Long id, int from, int size) throws WrongIdException, ValidationException;
 
-    List<ItemDto> getItemsFromKeyWord(String text);
+    List<ItemDto> getItemsFromKeyWord(String text, int from, int size) throws ValidationException;
 
     CommentDto addComment(Comment comment, Long itemId, Long userId) throws AccessException, ValidationException;
 }

@@ -58,14 +58,18 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemBookingDto> getAllItemsFromUserId(@RequestHeader("X-Sharer-User-Id") Long userId)
-            throws WrongIdException {
-        return itemService.getAllItemsFromUserId(userId);
+    public List<ItemBookingDto> getAllItemsFromUserId(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                      @RequestParam(required = false, defaultValue = "0") int from,
+                                                      @RequestParam(required = false, defaultValue = "20") int size)
+            throws WrongIdException, ValidationException {
+        return itemService.getAllItemsFromUserId(userId, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> getItemsFromKeyWord(@RequestParam String text) {
-        return itemService.getItemsFromKeyWord(text);
+    public List<ItemDto> getItemsFromKeyWord(@RequestParam String text,
+                                             @RequestParam(required = false, defaultValue = "0") int from,
+                                             @RequestParam(required = false, defaultValue = "20") int size) throws ValidationException {
+        return itemService.getItemsFromKeyWord(text, from, size);
     }
 
     @ExceptionHandler

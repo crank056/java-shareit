@@ -2,6 +2,9 @@ package ru.practicum.shareit.item.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
@@ -93,10 +96,12 @@ public class ItemServiceImpl implements ItemService {
         return itemBookingDto;
     }
 
-    public List<ItemBookingDto> getAllItemsFromUserId(Long id) throws WrongIdException {
+    public List<ItemBookingDto> getAllItemsFromUserId(Long id, int from, int size) throws WrongIdException, ValidationException {
         if (!userRepository.existsById(id)) throw new WrongIdException("Пользователь не существует");
         List<ItemBookingDto> userItemsDto = new ArrayList<>();
-        for (Item item : itemRepository.findAllByOwnerOrderByIdAsc(userRepository.getReferenceById(id))) {
+        if (from < 0 || size < 1) throw new ValidationException("Неверные значения формата");
+        Pageable page = PageRequest.of(from / size, size, Sort.by("id").ascending());
+        for (Item item : itemRepository.findAllByOwnerOrderByIdAsc(userRepository.getReferenceById(id), page)) {
             List<Comment> comments = commentRepository.findAllByItemOrderByCreatedAsc(item);
             List<CommentDto> commentsDto = new ArrayList<>();
             for (Comment comment : comments) {
@@ -112,15 +117,16 @@ public class ItemServiceImpl implements ItemService {
         return userItemsDto;
     }
 
-    public List<ItemDto> getItemsFromKeyWord(String text) {
-        List<Item> items = itemRepository.findAll();
+    public List<ItemDto> getItemsFromKeyWord(String text, int from, int size) throws ValidationException {
+        if (from < 0 || size < 1) throw new ValidationException("Неверные значения формата");
+        Pageable page = PageRequest.of(from / size, size, Sort.by("id").ascending());
+        if (text.isEmpty() && text.isBlank()) {
+            return new ArrayList<>();
+        }
+        List<Item> items = itemRepository.findFromKeyWord(text, page);
         List<ItemDto> itemsDto = new ArrayList<>();
         for (Item item : items) {
-            if (item.getDescription().toLowerCase().contains(text.toLowerCase()) && !text.isBlank()) {
-                if (item.getIsAvailable()) {
-                    itemsDto.add(ItemMapper.toItemDto(item));
-                }
-            }
+            itemsDto.add(ItemMapper.toItemDto(item));
         }
         return itemsDto;
     }

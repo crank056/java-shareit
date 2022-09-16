@@ -13,7 +13,7 @@ public interface RequestRepository extends JpaRepository<ItemRequest, Long>{
 
     List<ItemRequest> findAllByRequesterOrderByCreatedDesc(User requester);
 
-    Page<ItemRequest> findAll(Pageable page);
+    Page<ItemRequest> findAllByRequesterNotOrderByCreatedDesc(Pageable page, User requester);
 
 
 }
