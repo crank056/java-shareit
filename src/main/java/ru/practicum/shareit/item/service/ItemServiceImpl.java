@@ -15,6 +15,8 @@ import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.Repository.ItemRepository;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.requests.ItemRequest;
+import ru.practicum.shareit.requests.RequestRepository;
 import ru.practicum.shareit.user.userStorage.UserRepository;
 
 import java.time.LocalDateTime;
@@ -28,22 +30,28 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final RequestRepository requestRepository;
 
     @Autowired
     public ItemServiceImpl(
             ItemRepository itemRepository,
             UserRepository userRepository,
             BookingRepository bookingRepository,
-            CommentRepository commentRepository) {
+            CommentRepository commentRepository, RequestRepository requestRepository) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
         this.commentRepository = commentRepository;
+        this.requestRepository = requestRepository;
     }
 
     public Item addItem(ItemDto itemDto, Long userId) throws WrongIdException, ValidationException {
         validateItem(itemDto);
-        Item item = ItemMapper.toItem(itemDto);
+        ItemRequest request = null;
+        if (itemDto.getRequestId() != null) {
+            request = requestRepository.getReferenceById(itemDto.getRequestId());
+        }
+        Item item = ItemMapper.toItem(itemDto, request);
         if (userId == null) throw new WrongIdException("Не передан id пользователя");
         if (!userRepository.existsById(userId)) throw new WrongIdException("Нет такого пользователя");
         item.setOwner(userRepository.getReferenceById(userId));
@@ -61,7 +69,7 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getDescription() != null) item.setDescription(itemDto.getDescription());
         if (itemDto.getAvailable() != null) item.setIsAvailable(itemDto.getAvailable());
         if (itemDto.getOwner() != null) item.setOwner(itemDto.getOwner());
-        if (itemDto.getRequest() != null) item.setRequest(itemDto.getRequest());
+        if (itemDto.getRequestId() != null) item.setRequest(requestRepository.getReferenceById(itemDto.getId()));
         validateItem(ItemMapper.toItemDto(item));
         return itemRepository.save(item);
     }

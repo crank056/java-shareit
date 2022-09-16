@@ -1,5 +1,6 @@
 package ru.practicum.shareit.requests.service;
 
+import ru.practicum.shareit.exceptions.WrongIdException;
 import ru.practicum.shareit.requests.ItemRequest;
 import ru.practicum.shareit.requests.dto.ItemRequestDto;
 
@@ -10,7 +11,7 @@ public interface RequestService {
 
     List<ItemRequestDto> getAllRequests(Long userId);
 
-    List<ItemRequestDto> getAllWithPagination(Integer from, Integer size);
+    List<ItemRequestDto> getAllWithPagination(Long userId, Integer from, Integer size);
 
-    ItemRequestDto getRequestFromId(Long requestId);
+    ItemRequestDto getRequestFromId(Long userId,Long requestId) throws WrongIdException;
 }

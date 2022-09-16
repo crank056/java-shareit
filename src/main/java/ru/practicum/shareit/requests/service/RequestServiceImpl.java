@@ -18,6 +18,7 @@ import ru.practicum.shareit.requests.dto.RequestMapper;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.userStorage.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +42,7 @@ public class RequestServiceImpl implements RequestService{
     public ItemRequestDto addRequest(Long userId, ItemRequestDto itemRequestDto) {
         validateRequest(itemRequestDto);
         User requester = getUserFromId(userId);
+        itemRequestDto.setCreated(LocalDateTime.now());
         ItemRequest itemRequest = requestRepository.save(RequestMapper.toRequest(itemRequestDto, requester));
         return RequestMapper.ToDto(requestRepository.save(itemRequest), getItems(itemRequest.getId()));
     }
@@ -58,15 +60,21 @@ public class RequestServiceImpl implements RequestService{
 
     @Override
     @SneakyThrows
-    public List<ItemRequestDto> getAllWithPagination(Integer from, Integer size) {
+    public List<ItemRequestDto> getAllWithPagination(Long userId, Integer from, Integer size) {
         if(from < 0 || size < 1) throw new ValidationException("Неверные значения формата");
         Pageable page = PageRequest.of(from / size, size, Sort.by("created").ascending());
-
-        return requestRepository.findAllOrderByCreatedDesc(page);
+        List<ItemRequestDto> itemRequestDto = new ArrayList<>();
+        List<ItemRequest> itemRequests = requestRepository.findAll(page).getContent();
+        for(ItemRequest itemRequest: itemRequests) {
+            itemRequestDto.add(RequestMapper.ToDto(itemRequest, getItems(itemRequest.getId())));
+        }
+        return itemRequestDto;
     }
 
     @Override
-    public ItemRequestDto getRequestFromId(Long requestId) {
+    public ItemRequestDto getRequestFromId(Long userId, Long requestId) throws WrongIdException {
+        getUserFromId(userId);
+        if(!requestRepository.existsById(requestId)) throw new WrongIdException("Запрос отсутствует");
         return RequestMapper.ToDto(requestRepository.getReferenceById(requestId), getItems(requestId));
     }
 
@@ -92,9 +100,9 @@ public class RequestServiceImpl implements RequestService{
     @SneakyThrows
     private void validateRequest(ItemRequestDto itemRequestDto) {
         if(itemRequestDto.equals(null)) throw new ValidationException("Объекта нет");
-        if(itemRequestDto.getDescription().isEmpty() ||
-                itemRequestDto.getDescription().isBlank() ||
-                itemRequestDto.getDescription().equals(null))
+        if(itemRequestDto.getDescription() == null ||
+                itemRequestDto.getDescription().isEmpty() ||
+                itemRequestDto.getDescription().isBlank())
             throw new ValidationException("Нет описания");
     }
 }
