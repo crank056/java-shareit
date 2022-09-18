@@ -48,7 +48,7 @@ public class ItemServiceImpl implements ItemService {
         this.requestRepository = requestRepository;
     }
 
-    public Item addItem(ItemDto itemDto, Long userId) throws WrongIdException, ValidationException {
+    public ItemDto addItem(ItemDto itemDto, Long userId) throws WrongIdException, ValidationException {
         validateItem(itemDto);
         ItemRequest request = null;
         if (itemDto.getRequestId() != null) {
@@ -59,10 +59,10 @@ public class ItemServiceImpl implements ItemService {
         if (!userRepository.existsById(userId)) throw new WrongIdException("Нет такого пользователя");
         item.setOwner(userRepository.getReferenceById(userId));
         log.info("Получен объект item в сервисе, объект: {}", item);
-        return itemRepository.save(item);
+        return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
-    public Item refreshItem(ItemDto itemDto, Long id, Long userId)
+    public ItemDto refreshItem(ItemDto itemDto, Long id, Long userId)
             throws WrongIdException, ValidationException {
         Item item = itemRepository.getReferenceById(id);
         if (!itemRepository.getReferenceById(id).getOwner().getId().equals(userId))
@@ -74,7 +74,7 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getOwner() != null) item.setOwner(itemDto.getOwner());
         if (itemDto.getRequestId() != null) item.setRequest(requestRepository.getReferenceById(itemDto.getId()));
         validateItem(ItemMapper.toItemDto(item));
-        return itemRepository.save(item);
+        return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
     public ItemBookingDto getItemFromId(Long userId, Long id) throws WrongIdException {

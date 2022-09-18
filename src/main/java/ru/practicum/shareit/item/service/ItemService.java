@@ -14,9 +14,9 @@ import java.util.List;
 
 @Service
 public interface ItemService {
-    Item addItem(ItemDto itemDto, Long userId) throws WrongIdException, ValidationException;
+    ItemDto addItem(ItemDto itemDto, Long userId) throws WrongIdException, ValidationException;
 
-    Item refreshItem(ItemDto itemDto, Long id, Long userId) throws WrongIdException, ValidationException;
+    ItemDto refreshItem(ItemDto itemDto, Long id, Long userId) throws WrongIdException, ValidationException;
 
     ItemBookingDto getItemFromId(Long userId, Long id) throws WrongIdException;
 

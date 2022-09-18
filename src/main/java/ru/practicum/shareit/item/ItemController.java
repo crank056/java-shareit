@@ -31,7 +31,7 @@ public class ItemController {
                            @RequestHeader("X-Sharer-User-Id") Long userId)
             throws WrongIdException, ValidationException {
         log.info("Получен запрос POST, объект: {}", itemDto);
-        return ItemMapper.toItemDto(itemService.addItem(itemDto, userId));
+        return itemService.addItem(itemDto, userId);
     }
 
     @PostMapping("/{itemId}/comment")
@@ -48,7 +48,7 @@ public class ItemController {
                                @RequestHeader("X-Sharer-User-Id") Long userId)
             throws WrongIdException, ValidationException {
         log.info("Получен запрос PATCH, объект: {}", itemDto);
-        return ItemMapper.toItemDto(itemService.refreshItem(itemDto, id, userId));
+        return itemService.refreshItem(itemDto, id, userId);
     }
 
     @GetMapping("/{id}")
