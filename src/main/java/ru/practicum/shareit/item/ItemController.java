@@ -10,7 +10,7 @@ import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.exceptions.WrongIdException;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
-import ru.practicum.shareit.item.service.ItemServiceImpl;
+import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.List;
 import java.util.Map;
@@ -19,10 +19,10 @@ import java.util.Map;
 @RequestMapping("/items")
 @Slf4j
 public class ItemController {
-    private final ItemServiceImpl itemService;
+    private final ItemService itemService;
 
     @Autowired
-    public ItemController(ItemServiceImpl itemService) {
+    public ItemController(ItemService itemService) {
         this.itemService = itemService;
     }
 

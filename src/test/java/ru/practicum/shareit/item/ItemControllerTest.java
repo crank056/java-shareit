@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.User;
@@ -23,6 +24,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -46,14 +48,18 @@ public class ItemControllerTest {
     @Autowired
     private MockMvc mvc;
     private ItemDto itemDto;
+    private ItemBookingDto itemBookingDto;
     private CommentDto commentDto;
-    private User user = new User(1L, "name", "ya@ya.ru");
     private final ObjectMapper mapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {
         mvc = MockMvcBuilders.standaloneSetup(itemController).build();
-        itemDto = new ItemDto(1L, "name", "desc", true, user , 1L);
+        itemDto = new ItemDto(1L, "name", "desc", true, null, null);
+        itemBookingDto = new ItemBookingDto(
+                1L, "name", "desc",
+                true, null, null,
+                null, null, null);
         commentDto = new CommentDto(null, "text", null, null, null);
     }
 
@@ -88,8 +94,40 @@ public class ItemControllerTest {
                 .andDo(print())
                 .andExpect(jsonPath("$.id", is(commentDto.getId()), Long.class))
                 .andExpect(jsonPath("$.text", is(commentDto.getText())))
-                .andExpect(jsonPath("$.authorName", is(commentDto.getAuthorName())))
-                .andExpect(jsonPath("$.created", notNullValue()));
+                .andExpect(jsonPath("$.authorName", is(commentDto.getAuthorName())));
+    }
+
+    @Test
+    void refreshItemTest() throws Exception {
+        when(itemService.refreshItem(any(), anyLong(), anyLong())).thenReturn(itemDto);
+
+        mvc.perform(patch("/items/1")
+                        .header("X-Sharer-User-Id", "1")
+                        .content(mapper.writeValueAsString(itemDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class))
+                .andExpect(jsonPath("$.name", is(itemDto.getName())))
+                .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
+                .andExpect(jsonPath("$.available", is(true)));
+    }
+
+    @Test
+    void getItemFromIdTest() throws Exception {
+        when(itemService.getItemFromId(anyLong(), anyLong())).thenReturn(itemBookingDto);
+
+        mvc.perform(get("/items/1")
+                        .header("X-Sharer-User-Id", "1")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.id", is(itemBookingDto.getId()), Long.class))
+                .andExpect(jsonPath("$.name", is(itemBookingDto.getName())))
+                .andExpect(jsonPath("$.description", is(itemBookingDto.getDescription())))
+                .andExpect(jsonPath("$.available", is(true)));
     }
 
 }
