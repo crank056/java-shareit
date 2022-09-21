@@ -66,7 +66,9 @@ public class UserServiceImplTest {
 
     @Test
     void updateTest() {
-        assertThrows(WrongIdException.class, () -> userService.update(1L, null));
+        assertThrows(ValidationException.class, () -> userService.update(1L, null));
+        assertThrows(WrongIdException.class, () -> userService.update(
+                1L, new UserDto(null, "update", "update@ya.ru")));
         User savedUser = userRepository.save(user);
         assertThrows(ValidationException.class, () -> userService.update(savedUser.getId(), null));
         userService.update(savedUser.getId(), new UserDto(null, "update", "update@ya.ru"));

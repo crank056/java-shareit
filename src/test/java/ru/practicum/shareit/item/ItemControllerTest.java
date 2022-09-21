@@ -29,8 +29,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -130,4 +129,37 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.available", is(true)));
     }
 
+    @Test
+    void getAllItemFromUserIdTest() throws Exception {
+        when(itemService.getAllItemsFromUserId(anyLong(), anyInt(), anyInt())).thenReturn(List.of(itemBookingDto));
+
+        mvc.perform(get("/items/")
+                        .header("X-Sharer-User-Id", "1")
+                        .param("from", "1")
+                        .param("size", "20")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.[0].id", is(itemBookingDto.getId()), Long.class))
+                .andExpect(jsonPath("$.[0].name", is(itemBookingDto.getName())))
+                .andExpect(jsonPath("$.[0].description", is(itemBookingDto.getDescription())))
+                .andExpect(jsonPath("$.[0].available", is(true)));
+    }
+
+    @Test
+    void getItemsFromKeyWord() throws Exception {
+        when(itemService.getItemsFromKeyWord(anyString(), anyInt(), anyInt())).thenReturn(List.of(itemDto));
+
+        mvc.perform(get("/items/search?text=text")
+                        .header("X-Sharer-User-Id", "1")
+                        .param("from", "1")
+                        .param("size", "20")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.[0].id", is(itemDto.getId()), Long.class))
+                .andExpect(jsonPath("$.[0].name", is(itemDto.getName())))
+                .andExpect(jsonPath("$.[0].description", is(itemDto.getDescription())))
+                .andExpect(jsonPath("$.[0].available", is(true)));
+    }
 }
