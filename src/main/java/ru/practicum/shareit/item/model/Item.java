@@ -9,9 +9,8 @@ import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
 
-@Data
 @Entity
-@Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "items")
