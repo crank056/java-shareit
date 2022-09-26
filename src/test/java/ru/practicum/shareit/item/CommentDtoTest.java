@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+import org.assertj.core.api.Assertions;
 import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@ import ru.practicum.shareit.item.dto.ItemBookingDto;
 
 import java.time.LocalDateTime;
 
-import static org.assertj.core.api.Assertions.assertThat;
+
 
 @JsonTest
 public class CommentDtoTest {
@@ -28,9 +29,9 @@ public class CommentDtoTest {
                 LocalDateTime.now()
         );
         JsonContent<CommentDto> result = json.write(commentDto);
-        assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
-        assertThat(result).extractingJsonPathStringValue("$.text").isEqualTo("text");
-        assertThat(result).extractingJsonPathStringValue("$.authorName").isEqualTo("name");
-        assertThat(result).extractingJsonPathStringValue("$.created").isNotNull();
+        Assertions.assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
+        Assertions.assertThat(result).extractingJsonPathStringValue("$.text").isEqualTo("text");
+        Assertions.assertThat(result).extractingJsonPathStringValue("$.authorName").isEqualTo("name");
+        Assertions.assertThat(result).extractingJsonPathStringValue("$.created").isNotNull();
     }
 }

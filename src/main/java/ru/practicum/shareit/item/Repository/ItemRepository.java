@@ -11,8 +11,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
 import java.util.List;
-@EnableJpaRepositories
-@Component
+
 public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findAllByOwnerOrderByIdAsc(User owner, Pageable page);
 

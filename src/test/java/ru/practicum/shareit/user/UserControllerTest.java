@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import ru.practicum.shareit.user.UserController;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -37,13 +38,13 @@ public class UserControllerTest {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         mvc = MockMvcBuilders.standaloneSetup(userController).build();
         userDto = new UserDto(1L, "name", "email@ya.ru");
     }
 
     @Test
-    void createUserTest() throws Exception {
+    public void createUserTest() throws Exception {
         when(userService.create(any())).thenReturn(userDto);
         mvc.perform(post("/users")
                         .content(mapper.writeValueAsString(userDto))
@@ -58,7 +59,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void updateUserTest() throws Exception {
+    public void updateUserTest() throws Exception {
         when(userService.update(anyLong(), any())).thenReturn(userDto);
         mvc.perform(patch("/users/1")
                         .content(mapper.writeValueAsString(userDto))
@@ -73,7 +74,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void deleteUserTest() throws Exception {
+    public void deleteUserTest() throws Exception {
         when(userService.delete(anyLong())).thenReturn(true);
         mvc.perform(delete("/users/1"))
                 .andExpect(status().isOk())
@@ -81,7 +82,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void getAllTest() throws Exception {
+    public void getAllTest() throws Exception {
         when(userService.findAll()).thenReturn(List.of(userDto));
         mvc.perform(MockMvcRequestBuilders.get("/users")
                         .accept(MediaType.APPLICATION_JSON))
@@ -93,7 +94,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void getUserFromIdTest() throws Exception {
+    public void getUserFromIdTest() throws Exception {
         when(userService.findById(anyLong())).thenReturn(userDto);
         mvc.perform(MockMvcRequestBuilders.get("/users/1")
                         .accept(MediaType.APPLICATION_JSON))
