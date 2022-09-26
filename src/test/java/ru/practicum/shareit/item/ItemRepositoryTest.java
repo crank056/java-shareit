@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.maven.settings.Repository;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class ItemRepositoryTest {
     @Autowired
     private TestEntityManager testEntityManager;

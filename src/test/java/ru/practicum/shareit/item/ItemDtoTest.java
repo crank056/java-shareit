@@ -6,8 +6,6 @@ import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.dto.UserDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

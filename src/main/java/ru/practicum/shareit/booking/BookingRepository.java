@@ -28,12 +28,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end, Pageable page);
 
-    @Query("SELECT b FROM Booking b, Item i " +
-            "WHERE b.item.id = i.id AND b.booker.id = :bookerId AND b.end < :end " +
-            "ORDER BY b.start DESC")
-    List<Booking> findAllByBookerIdInPast(
-            @Param("bookerId") Long bookerId,
-            @Param("end") LocalDateTime end);
+
+    List<Booking> findAllByBookerAndEndBeforeOrderByStartDesc(User booker, LocalDateTime end);
 
     @Query("SELECT b FROM Booking b, Item i " +
             "WHERE b.item.id = i.id AND b.booker.id = :bookerId AND b.end < :end " +
@@ -90,7 +86,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("SELECT b FROM Booking b, Item i " +
             "WHERE b.item.id = i.id AND i.owner = :owner AND b.status = :status " +
             "ORDER BY b.start DESC")
-    List<Booking> findAllByItemOwnerAndStatus(@Param("owner") User owner, @Param("status") Status status, Pageable page);
+    List<Booking> findAllByItemOwnerAndStatus(
+            @Param("owner") User owner, @Param("status") Status status, Pageable page);
 
     @Query("SELECT b FROM Booking b, Item i" +
             " WHERE b.item.id = i.id AND b.item = :item " +

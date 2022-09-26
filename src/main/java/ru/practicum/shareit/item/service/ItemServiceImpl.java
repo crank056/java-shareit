@@ -144,9 +144,13 @@ public class ItemServiceImpl implements ItemService {
             throws AccessException, ValidationException {
         if (comment.getText().isBlank() || comment.getText().isEmpty())
             throw new ValidationException("Комментарий не может быть пустым");
-        List<Booking> bookings = bookingRepository.findAllByBookerIdInPast(
-                userId, LocalDateTime.now());
-        if (bookings.size() == 0) throw new AccessException("Вы не брали вещь в аренду");
+        List<Booking> bookings = bookingRepository.findAllByBookerAndEndBeforeOrderByStartDesc(
+                userRepository.getReferenceById(userId), LocalDateTime.now());
+        Boolean booker = false;
+        for(Booking booking: bookings) {
+            if(booking.getItem().getId().equals(itemId)) booker = true;
+        }
+        if (!booker) throw new AccessException("Вы не брали вещь в аренду");
         comment.setItem(itemRepository.getReferenceById(itemId));
         comment.setUser(userRepository.getReferenceById(userId));
         comment.setCreated(LocalDateTime.now());
