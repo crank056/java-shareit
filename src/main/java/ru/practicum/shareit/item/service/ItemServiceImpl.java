@@ -54,7 +54,7 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getRequestId() != null) {
             request = requestRepository.getReferenceById(itemDto.getRequestId());
         }
-        Item item = ItemMapper.toItem(itemDto, request);
+        Item item = ItemMapper.toItem(itemDto, userRepository.getReferenceById(userId), request);
         if (userId == null) throw new WrongIdException("Не передан id пользователя");
         if (!userRepository.existsById(userId)) throw new WrongIdException("Нет такого пользователя");
         item.setOwner(userRepository.getReferenceById(userId));
@@ -72,7 +72,7 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getName() != null) item.setName(itemDto.getName());
         if (itemDto.getDescription() != null) item.setDescription(itemDto.getDescription());
         if (itemDto.getAvailable() != null) item.setIsAvailable(itemDto.getAvailable());
-        if (itemDto.getOwner() != null) item.setOwner(itemDto.getOwner());
+        if (itemDto.getOwnerId() != null) item.setOwner(userRepository.getReferenceById(userId));
         if (itemDto.getRequestId() != null) item.setRequest(requestRepository.getReferenceById(itemDto.getId()));
         validateItem(ItemMapper.toItemDto(item));
         return ItemMapper.toItemDto(itemRepository.save(item));

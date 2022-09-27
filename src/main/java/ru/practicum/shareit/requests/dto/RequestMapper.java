@@ -12,7 +12,7 @@ public class RequestMapper {
         return new ItemRequestDto(
                 itemRequest.getId(),
                 itemRequest.getDescription(),
-                itemRequest.getRequester(),
+                itemRequest.getRequester().getId(),
                 itemRequest.getCreated(),
                 itemsDto
         );

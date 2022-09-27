@@ -18,8 +18,8 @@ public class ItemBookingDto {
     private String name;
     private String description;
     private Boolean available;
-    private User owner;
-    private ItemRequest request;
+    private Long ownerId;
+    private Long requestId;
     private BookingItemDto lastBooking;
     private BookingItemDto nextBooking;
     private List<CommentDto> comments;

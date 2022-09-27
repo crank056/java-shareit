@@ -67,11 +67,11 @@ public class ItemServiceTest {
         assertThrows(WrongIdException.class, () -> itemService.addItem(ItemMapper.toItemDto(item), 1L));
         Long userId = userRepository.save(user).getId();
         assertThrows(ValidationException.class, () -> itemService.addItem(
-                new ItemDto(null, "name", "desc", null, user, null), userId));
+                new ItemDto(null, "name", "desc", null, userId, null), userId));
         assertThrows(ValidationException.class, () -> itemService.addItem(
-                new ItemDto(null, null, "desc", null, user, null), userId));
+                new ItemDto(null, null, "desc", null,userId, null), userId));
         assertThrows(ValidationException.class, () -> itemService.addItem(
-                new ItemDto(null, "name", null, null, user, null), userId));
+                new ItemDto(null, "name", null, null, userId, null), userId));
         itemDto = itemService.addItem(ItemMapper.toItemDto(item), userId);
         assertNotNull(itemDto);
         assertEquals(item.getName(), itemDto.getName());
