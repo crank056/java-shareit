@@ -82,7 +82,8 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$.end", notNullValue()))
                 .andExpect(jsonPath("$.item.id", is(bookingDto.getItem().getId()), Long.class))
                 .andExpect(jsonPath("$.booker.id", is(bookingDto.getItem().getOwnerId()), Long.class))
-                .andExpect(jsonPath("$.status", is(Status.WAITING.toString())));;
+                .andExpect(jsonPath("$.status", is(Status.WAITING.toString())));
+        ;
     }
 
     @Test
@@ -116,6 +117,40 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$.item.id", is(bookingDto.getItem().getId()), Long.class))
                 .andExpect(jsonPath("$.booker.id", is(bookingDto.getItem().getOwnerId()), Long.class))
                 .andExpect(jsonPath("$.status", is(Status.WAITING.toString())));
+    }
+
+    @Test
+    void getUserBookingsWithStatusTest() throws Exception {
+        when(bookingService.getBookingsFromUserId(anyLong(), anyString(), anyInt(), anyInt())).thenReturn(
+                List.of(bookingDto));
+        mvc.perform(MockMvcRequestBuilders.get("/bookings")
+                        .header("X-Sharer-User-Id", "1")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.[0].id", is(bookingDto.getId()), Long.class))
+                .andExpect(jsonPath("$.[0].start", notNullValue()))
+                .andExpect(jsonPath("$.[0].end", notNullValue()))
+                .andExpect(jsonPath("$.[0].item.id", is(bookingDto.getItem().getId()), Long.class))
+                .andExpect(jsonPath("$.[0].booker.id", is(bookingDto.getBooker().getId()), Long.class))
+                .andExpect(jsonPath("$.[0].status", is(bookingDto.getStatus().toString())));
+    }
+
+    @Test
+    void getAllUserBookingsTest() throws Exception {
+        when(bookingService.getBookingsFromOwnerId(anyLong(), anyString(), anyInt(), anyInt())).thenReturn(
+                List.of(bookingDto));
+        mvc.perform(MockMvcRequestBuilders.get("/bookings/owner")
+                        .header("X-Sharer-User-Id", "1")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.[0].id", is(bookingDto.getId()), Long.class))
+                .andExpect(jsonPath("$.[0].start", notNullValue()))
+                .andExpect(jsonPath("$.[0].end", notNullValue()))
+                .andExpect(jsonPath("$.[0].item.id", is(bookingDto.getItem().getId()), Long.class))
+                .andExpect(jsonPath("$.[0].booker.id", is(bookingDto.getBooker().getId()), Long.class))
+                .andExpect(jsonPath("$.[0].status", is(bookingDto.getStatus().toString())));
     }
 }
 
