@@ -27,7 +27,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end, Pageable page);
 
-
     List<Booking> findAllByBookerAndEndBeforeOrderByStartDesc(User booker, LocalDateTime end);
 
     @Query("SELECT b FROM Booking b, Item i " +
@@ -66,13 +65,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findAllByItemOwnerInPastWithPage(
             @Param("owner") User owner,
             @Param("end") LocalDateTime end, Pageable page);
-
-    @Query("SELECT b FROM Booking b, Item i " +
-            "WHERE b.item.id = i.id AND i.owner = :owner AND b.end < :end " +
-            "ORDER BY b.start DESC")
-    List<Booking> findAllByItemOwnerInPast(
-            @Param("owner") User owner,
-            @Param("end") LocalDateTime end);
 
     @Query("SELECT b FROM Booking b, Item i " +
             "WHERE b.item.id = i.id AND i.owner = :owner AND b.start > :start AND b.end > :end " +
