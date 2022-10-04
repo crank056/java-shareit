@@ -27,7 +27,8 @@ public class BookingController {
     @PostMapping
     public BookingDto createBooking(
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @RequestBody BookingItemDto bookingItemDto) throws ValidationException, AvailableException {
+            @RequestBody BookingItemDto bookingItemDto)
+            throws ValidationException, AvailableException, AccessException, WrongIdException, NotFoundException {
         log.info("Запрос POST /bookings получен, объект: {}", bookingItemDto);
         return bookingService.createBooking(userId, bookingItemDto);
     }
@@ -43,7 +44,7 @@ public class BookingController {
     @GetMapping(value = "/{bookingId}")
     public BookingDto getBookingFromId(
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @PathVariable Long bookingId) throws AccessException, NotFoundException {
+            @PathVariable Long bookingId) throws AccessException, NotFoundException, WrongIdException {
         return bookingService.getBookingFromId(userId, bookingId);
     }
 
