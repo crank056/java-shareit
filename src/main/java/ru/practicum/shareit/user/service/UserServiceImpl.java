@@ -48,9 +48,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @SneakyThrows
-    public UserDto update(long userId, UserDto userDto){
-        if(userDto == null) throw new ValidationException("Нет объекта");
-        if(!userRepository.existsById(userId)) throw new WrongIdException("Нет такого пользователя");
+    public UserDto update(long userId, UserDto userDto) {
+        if (userDto == null) throw new ValidationException("Нет объекта");
+        if (!userRepository.existsById(userId)) throw new WrongIdException("Нет такого пользователя");
         User user = UserMapper.toUser(findById(userId));
         if (userDto.getName() != null && !userDto.getName().isBlank()) {
             user.setName(userDto.getName());
@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @SneakyThrows
     public boolean delete(long userId) {
-        if(!userRepository.existsById(userId)) throw new WrongIdException("Нет такого пользователя");
+        if (!userRepository.existsById(userId)) throw new WrongIdException("Нет такого пользователя");
         userRepository.deleteById(userId);
         return userRepository.existsById(userId);
     }

@@ -41,7 +41,7 @@ public class RequestServiceImpl implements RequestService{
     @SneakyThrows
     public ItemRequestDto addRequest(Long userId, ItemRequestDto itemRequestDto) {
         validateRequest(itemRequestDto);
-        if(!userRepository.existsById(userId)) throw new WrongIdException("Пользователя не существует");
+        if (!userRepository.existsById(userId)) throw new WrongIdException("Пользователя не существует");
         User requester = getUserFromId(userId);
         itemRequestDto.setCreated(LocalDateTime.now());
         ItemRequest itemRequest = requestRepository.save(RequestMapper.toRequest(itemRequestDto, requester));
@@ -62,8 +62,8 @@ public class RequestServiceImpl implements RequestService{
     @Override
     @SneakyThrows
     public List<ItemRequestDto> getAllWithPagination(Long userId, Integer from, Integer size) {
-        if(from < 0 || size < 1) throw new ValidationException("Неверные значения формата");
-        if(!userRepository.existsById(userId)) throw new WrongIdException("Пользователя не существует");
+        if (from < 0 || size < 1) throw new ValidationException("Неверные значения формата");
+        if (!userRepository.existsById(userId)) throw new WrongIdException("Пользователя не существует");
         Pageable page = PageRequest.of(from / size, size, Sort.by("created").ascending());
         List<ItemRequestDto> itemRequestDto = new ArrayList<>();
         List<ItemRequest> itemRequests = requestRepository.findAllByRequesterNotOrderByCreatedDesc(
@@ -77,7 +77,7 @@ public class RequestServiceImpl implements RequestService{
     @Override
     public ItemRequestDto getRequestFromId(Long userId, Long requestId) throws WrongIdException {
         getUserFromId(userId);
-        if(!requestRepository.existsById(requestId)) throw new WrongIdException("Запрос отсутствует");
+        if (!requestRepository.existsById(requestId)) throw new WrongIdException("Запрос отсутствует");
         return RequestMapper.ToDto(requestRepository.getReferenceById(requestId), getItems(requestId));
     }
 
@@ -85,7 +85,7 @@ public class RequestServiceImpl implements RequestService{
     private List<ItemDto> getItems(Long requestId) {
         List<Item> items = itemRepository.findAllByRequestId(requestId);
         List<ItemDto> itemDto = new ArrayList<>();
-        for(Item item: items) {
+        for (Item item: items) {
             itemDto.add(ItemMapper.toItemDto(item));
         }
         return itemDto;
@@ -94,7 +94,7 @@ public class RequestServiceImpl implements RequestService{
     @SneakyThrows
     private User getUserFromId(Long userId) {
         User requester = null;
-        if(userRepository.existsById(userId)) {
+        if (userRepository.existsById(userId)) {
             requester = userRepository.getReferenceById(userId);
         } else throw new WrongIdException("Пользователя с таким id не существует");
         return requester;
@@ -102,8 +102,8 @@ public class RequestServiceImpl implements RequestService{
 
     @SneakyThrows
     private void validateRequest(ItemRequestDto itemRequestDto) {
-        if(itemRequestDto == null) throw new ValidationException("Объекта нет");
-        if(itemRequestDto.getDescription() == null ||
+        if (itemRequestDto == null) throw new ValidationException("Объекта нет");
+        if (itemRequestDto.getDescription() == null ||
                 itemRequestDto.getDescription().isEmpty() ||
                 itemRequestDto.getDescription().isBlank())
             throw new ValidationException("Нет описания");

@@ -62,9 +62,9 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto updateBooking(Long userId, Long bookingId, Boolean approved)
             throws AccessException, ValidationException, WrongIdException {
-        if(!bookingRepository.existsById(bookingId)) throw new WrongIdException("Бронирования не существует!");
+        if (!bookingRepository.existsById(bookingId)) throw new WrongIdException("Бронирования не существует!");
         Booking booking = bookingRepository.getReferenceById(bookingId);
-        if(!userRepository.existsById(userId)) throw new WrongIdException("Пользователя не существует");
+        if (!userRepository.existsById(userId)) throw new WrongIdException("Пользователя не существует");
         if (!itemRepository.getReferenceById(
                 bookingRepository.getReferenceById(
                         bookingId).getItem().getId()).getOwner().getId().equals(userId))
@@ -78,7 +78,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto getBookingFromId(Long userId, Long bookingId) throws AccessException, NotFoundException, WrongIdException {
-        if(!userRepository.existsById(userId)) throw new WrongIdException("Нет такого пользователя");
+        if (!userRepository.existsById(userId)) throw new WrongIdException("Нет такого пользователя");
         if (!bookingRepository.existsById(bookingId)) throw new NotFoundException("Бронь отсутствует");
         Booking booking = bookingRepository.getReferenceById(bookingId);
         Long ownerId = itemRepository.getReferenceById(booking.getItem().getId()).getOwner().getId();
