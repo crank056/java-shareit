@@ -53,7 +53,7 @@ public class RequestServiceImpl implements RequestService {
         User requester = getUserFromId(userId);
         List<ItemRequest> requests = requestRepository.findAllByRequesterOrderByCreatedDesc(requester);
         List<ItemRequestDto> requestsDto = new ArrayList<>();
-        for(ItemRequest itemRequest: requests) {
+        for (ItemRequest itemRequest: requests) {
             requestsDto.add(RequestMapper.toDto(itemRequest, getItems(itemRequest.getId())));
         }
         return requestsDto;
