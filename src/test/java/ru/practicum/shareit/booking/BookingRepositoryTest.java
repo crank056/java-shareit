@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import ru.practicum.shareit.item.Repository.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.util.Status;
@@ -123,7 +122,7 @@ public class BookingRepositoryTest {
 
     @Test
     void findAllByItemOwnerInFutureTest() {
-        list = bookingRepository.findAllByItemOwnerInFuture(owner,LocalDateTime.now(), LocalDateTime.now(), page);
+        list = bookingRepository.findAllByItemOwnerInFuture(owner, LocalDateTime.now(), LocalDateTime.now(), page);
         assertEquals(1, list.size());
         assertEquals(itemFuture.getId(), list.get(0).getItem().getId());
     }
@@ -154,6 +153,4 @@ public class BookingRepositoryTest {
         assertEquals(itemCurrent.getId(), list.get(1).getItem().getId());
         assertEquals(itemPast.getId(), list.get(2).getItem().getId());
     }
-
-
 }

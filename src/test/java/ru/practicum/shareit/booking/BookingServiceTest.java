@@ -11,16 +11,17 @@ import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.service.BookingServiceImpl;
 import ru.practicum.shareit.exceptions.*;
 import ru.practicum.shareit.item.Repository.ItemRepository;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.requests.ItemRequest;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.userStorage.UserRepository;
+import ru.practicum.shareit.util.BookingState;
 import ru.practicum.shareit.util.Status;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,6 +44,7 @@ public class BookingServiceTest {
     ItemRequest itemRequest;
     Comment comment;
     Booking booking;
+    Booking booking2;
 
     @BeforeEach
     void setUp() {
@@ -55,6 +57,10 @@ public class BookingServiceTest {
                 null, LocalDateTime.now().minusDays(2),
                 LocalDateTime.now().minusDays(1), item,
                 user, Status.APPROVED);
+        booking2 = new Booking(
+                null, LocalDateTime.now().minusDays(2),
+                LocalDateTime.now().minusDays(1), item,
+                user2, Status.APPROVED);
         comment = new Comment(null, "text", item, user, LocalDateTime.now());
     }
 
@@ -75,20 +81,20 @@ public class BookingServiceTest {
                 new BookingItemDto(null, LocalDateTime.now(), LocalDateTime.now().plusDays(1),
                         1L, 1L, Status.WAITING)));
         item.setIsAvailable(false);
-        userRepository.save(user);
-        itemRepository.save(item);
-        assertThrows(AvailableException.class, () -> bookingService.createBooking(1L,
+        Long userId = userRepository.save(user).getId();
+        Long itemId = itemRepository.save(item).getId();
+        assertThrows(AvailableException.class, () -> bookingService.createBooking(userId,
                 new BookingItemDto(null, LocalDateTime.now(), LocalDateTime.now().plusDays(1),
-                        1L, 1L, Status.WAITING)));
+                        itemId, userId, Status.WAITING)));
         item.setIsAvailable(true);
-        itemRepository.save(item);
-        assertThrows(AccessException.class, () -> bookingService.createBooking(1L,
+        long savedItemId = itemRepository.save(item).getId();
+        assertThrows(AccessException.class, () -> bookingService.createBooking(userId,
                 new BookingItemDto(null, LocalDateTime.now(), LocalDateTime.now().plusDays(1),
-                        1L, 1L, Status.WAITING)));
+                        savedItemId, userId, Status.WAITING)));
         booking.setStart(LocalDateTime.now().plusDays(1));
         booking.setEnd(LocalDateTime.now().plusDays(2));
-        userRepository.save(user2);
-        BookingDto bookingDto = bookingService.createBooking(2L, BookingMapper.toBookingItemDto(booking));
+        Long user2Id = userRepository.save(user2).getId();
+        BookingDto bookingDto = bookingService.createBooking(user2Id, BookingMapper.toBookingItemDto(booking));
         assertNotNull(bookingDto);
         assertEquals(booking.getItem().getId(), bookingDto.getItem().getId());
     }
@@ -132,8 +138,41 @@ public class BookingServiceTest {
         assertEquals(BookingMapper.toBookingDto(booking), bookingDto);
     }
 
+    @Test
+    void getBookingsFromUserIdTest() throws ValidationException, WrongIdException {
+        assertThrows(WrongIdException.class, () -> bookingService.getBookingsFromUserId(
+                1L, "ALL", 0, 20));
+        Long userId = userRepository.save(user).getId();
+        assertThrows(ValidationException.class, () -> bookingService.getBookingsFromUserId(
+                userId, BookingState.ALL.toString(), -1, 0));
+        assertThrows(ValidationException.class, () -> bookingService.getBookingsFromUserId(
+                userId, BookingState.UNSUPPORTED_STATUS.toString(), 0, 20));
+        itemRepository.save(item);
+        Long user2Id = userRepository.save(user2).getId();
+        Long bookingId = bookingRepository.save(booking2).getId();
+        List<BookingDto> list = bookingService.getBookingsFromUserId(
+                userId, BookingState.ALL.toString(), 0, 20);
+        assertEquals(0, list.size());
+        list = bookingService.getBookingsFromUserId(user2Id, BookingState.ALL.toString(), 0, 20);
+        assertEquals(1, list.size());
+        assertEquals(BookingMapper.toBookingDto(bookingRepository.getReferenceById(bookingId)), list.get(0));
+    }
 
-
-
-
+    @Test
+    void getBookingsFromOwnerId() throws ValidationException, WrongIdException {
+        assertThrows(WrongIdException.class, () -> bookingService.getBookingsFromOwnerId(
+                1L, "ALL", 0, 20));
+        Long userId = userRepository.save(user).getId();
+        assertThrows(ValidationException.class, () -> bookingService.getBookingsFromOwnerId(
+                userId, BookingState.ALL.toString(), -1, 0));
+        assertThrows(ValidationException.class, () -> bookingService.getBookingsFromOwnerId(
+                userId, BookingState.UNSUPPORTED_STATUS.toString(), 0, 20));
+        itemRepository.save(item);
+        Long user2Id = userRepository.save(user2).getId();
+        Long bookingId = bookingRepository.save(booking2).getId();
+        List<BookingDto> list = bookingService.getBookingsFromOwnerId(
+                userId, BookingState.ALL.toString(), 0, 20);
+        assertEquals(1, list.size());
+        assertEquals(BookingMapper.toBookingDto(bookingRepository.getReferenceById(bookingId)), list.get(0));
+    }
 }

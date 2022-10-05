@@ -94,10 +94,10 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> getBookingsFromUserId(Long userId, String state, int from, int size)
             throws ValidationException, WrongIdException {
-        List<Booking> bookings = new ArrayList<>();
+        List<Booking> bookings;
+        if (!userRepository.existsById(userId)) throw new WrongIdException("Пользователя несуществует");
         if (from < 0 || size < 1) throw new ValidationException("Неверные значения формата");
         Pageable page;
-        if (!userRepository.existsById(userId)) throw new WrongIdException("Пользователя несуществует");
         switch (BookingState.valueOf(state)) {
             case ALL:
                 page = PageRequest.of(from / size, size, Sort.by("start").descending());
@@ -146,11 +146,11 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> getBookingsFromOwnerId(Long userId, String state, int from, int size)
             throws WrongIdException, ValidationException {
-        List<Booking> bookings = new ArrayList<>();
+        List<Booking> bookings;
+        if (!userRepository.existsById(userId)) throw new WrongIdException("Пользователя несуществует");
         if (from < 0 || size < 1) throw new ValidationException("Неверные значения формата");
         Pageable page;
         User owner = userRepository.getReferenceById(userId);
-        if (!userRepository.existsById(userId)) throw new WrongIdException("Пользователя несуществует");
         switch (BookingState.valueOf(state)) {
             case ALL:
                 page = PageRequest.of(from / size, size, Sort.by("start").descending());
