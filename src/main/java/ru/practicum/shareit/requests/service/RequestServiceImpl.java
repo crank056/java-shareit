@@ -41,6 +41,7 @@ public class RequestServiceImpl implements RequestService{
     @SneakyThrows
     public ItemRequestDto addRequest(Long userId, ItemRequestDto itemRequestDto) {
         validateRequest(itemRequestDto);
+        if(!userRepository.existsById(userId)) throw new WrongIdException("Пользователя не существует");
         User requester = getUserFromId(userId);
         itemRequestDto.setCreated(LocalDateTime.now());
         ItemRequest itemRequest = requestRepository.save(RequestMapper.toRequest(itemRequestDto, requester));
@@ -62,6 +63,7 @@ public class RequestServiceImpl implements RequestService{
     @SneakyThrows
     public List<ItemRequestDto> getAllWithPagination(Long userId, Integer from, Integer size) {
         if(from < 0 || size < 1) throw new ValidationException("Неверные значения формата");
+        if(!userRepository.existsById(userId)) throw new WrongIdException("Пользователя не существует");
         Pageable page = PageRequest.of(from / size, size, Sort.by("created").ascending());
         List<ItemRequestDto> itemRequestDto = new ArrayList<>();
         List<ItemRequest> itemRequests = requestRepository.findAllByRequesterNotOrderByCreatedDesc(
@@ -100,7 +102,7 @@ public class RequestServiceImpl implements RequestService{
 
     @SneakyThrows
     private void validateRequest(ItemRequestDto itemRequestDto) {
-        if(itemRequestDto.equals(null)) throw new ValidationException("Объекта нет");
+        if(itemRequestDto == null) throw new ValidationException("Объекта нет");
         if(itemRequestDto.getDescription() == null ||
                 itemRequestDto.getDescription().isEmpty() ||
                 itemRequestDto.getDescription().isBlank())

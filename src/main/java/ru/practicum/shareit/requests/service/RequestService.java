@@ -1,7 +1,6 @@
 package ru.practicum.shareit.requests.service;
 
 import ru.practicum.shareit.exceptions.WrongIdException;
-import ru.practicum.shareit.requests.ItemRequest;
 import ru.practicum.shareit.requests.dto.ItemRequestDto;
 
 import java.util.List;

@@ -43,7 +43,6 @@ public class ItemRequestControllerTest {
     ItemRequestController itemRequestController;
     @Autowired
     private MockMvc mvc;
-
     private ItemRequestDto itemRequestDto;
     private ItemDto itemDto;
     private final ObjectMapper mapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();

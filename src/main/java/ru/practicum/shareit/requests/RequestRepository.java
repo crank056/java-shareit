@@ -2,7 +2,6 @@ package ru.practicum.shareit.requests;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.user.User;
 
 import org.springframework.data.domain.Pageable;

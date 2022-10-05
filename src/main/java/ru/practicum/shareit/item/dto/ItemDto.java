@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.requests.ItemRequest;
-import ru.practicum.shareit.user.User;
 
 @Data
 @AllArgsConstructor
