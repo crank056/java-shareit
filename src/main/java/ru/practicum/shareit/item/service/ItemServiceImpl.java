@@ -64,7 +64,7 @@ public class ItemServiceImpl implements ItemService {
 
     public ItemDto refreshItem(ItemDto itemDto, Long id, Long userId)
             throws WrongIdException, ValidationException {
-        if(!itemRepository.existsById(id)) throw new WrongIdException("Нет такой вещи");
+        if (!itemRepository.existsById(id)) throw new WrongIdException("Нет такой вещи");
         Item item = itemRepository.getReferenceById(id);
         if (!itemRepository.getReferenceById(id).getOwner().getId().equals(userId))
             throw new WrongIdException("Неверный id хозяина вещи");
@@ -147,8 +147,8 @@ public class ItemServiceImpl implements ItemService {
         List<Booking> bookings = bookingRepository.findAllByBookerAndEndBeforeOrderByStartDesc(
                 userRepository.getReferenceById(userId), LocalDateTime.now());
         Boolean booker = false;
-        for(Booking booking: bookings) {
-            if(booking.getItem().getId().equals(itemId)) booker = true;
+        for (Booking booking: bookings) {
+            if (booking.getItem().getId().equals(itemId)) booker = true;
         }
         if (!booker) throw new AccessException("Вы не брали вещь в аренду");
         comment.setItem(itemRepository.getReferenceById(itemId));

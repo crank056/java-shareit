@@ -133,8 +133,8 @@ public class ItemServiceTest {
         User user2 = userRepository.save(new User(null, "name", "yaya@ya.ru"));
         assertThrows(ValidationException.class, () -> itemService.addComment(
                 new Comment(null, "", item, user, LocalDateTime.now()), itemId, userId));
-        assertThrows(AccessException.class, () -> itemService.addComment
-                (new Comment(null, "text", item, user2, LocalDateTime.now()), itemId, user2.getId()));
+        assertThrows(AccessException.class, () -> itemService.addComment(
+            new Comment(null, "text", item, user2, LocalDateTime.now()), itemId, user2.getId()));
         assertEquals(comment.getText(), itemService.addComment(comment, itemId, userId).getText());
     }
 }

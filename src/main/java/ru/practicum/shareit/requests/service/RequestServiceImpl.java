@@ -24,7 +24,7 @@ import java.util.List;
 
 @Service
 
-public class RequestServiceImpl implements RequestService{
+public class RequestServiceImpl implements RequestService {
     private final RequestRepository requestRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
@@ -45,7 +45,7 @@ public class RequestServiceImpl implements RequestService{
         User requester = getUserFromId(userId);
         itemRequestDto.setCreated(LocalDateTime.now());
         ItemRequest itemRequest = requestRepository.save(RequestMapper.toRequest(itemRequestDto, requester));
-        return RequestMapper.ToDto(requestRepository.save(itemRequest), getItems(itemRequest.getId()));
+        return RequestMapper.toDto(requestRepository.save(itemRequest), getItems(itemRequest.getId()));
     }
 
     @Override
@@ -54,7 +54,7 @@ public class RequestServiceImpl implements RequestService{
         List<ItemRequest> requests = requestRepository.findAllByRequesterOrderByCreatedDesc(requester);
         List<ItemRequestDto> requestsDto = new ArrayList<>();
         for(ItemRequest itemRequest: requests) {
-            requestsDto.add(RequestMapper.ToDto(itemRequest, getItems(itemRequest.getId())));
+            requestsDto.add(RequestMapper.toDto(itemRequest, getItems(itemRequest.getId())));
         }
         return requestsDto;
     }
@@ -67,9 +67,9 @@ public class RequestServiceImpl implements RequestService{
         Pageable page = PageRequest.of(from / size, size, Sort.by("created").ascending());
         List<ItemRequestDto> itemRequestDto = new ArrayList<>();
         List<ItemRequest> itemRequests = requestRepository.findAllByRequesterNotOrderByCreatedDesc(
-                page, getUserFromId(userId) ).getContent();
-        for(ItemRequest itemRequest: itemRequests) {
-            itemRequestDto.add(RequestMapper.ToDto(itemRequest, getItems(itemRequest.getId())));
+                page, getUserFromId(userId)).getContent();
+        for (ItemRequest itemRequest: itemRequests) {
+            itemRequestDto.add(RequestMapper.toDto(itemRequest, getItems(itemRequest.getId())));
         }
         return itemRequestDto;
     }
@@ -78,7 +78,7 @@ public class RequestServiceImpl implements RequestService{
     public ItemRequestDto getRequestFromId(Long userId, Long requestId) throws WrongIdException {
         getUserFromId(userId);
         if (!requestRepository.existsById(requestId)) throw new WrongIdException("Запрос отсутствует");
-        return RequestMapper.ToDto(requestRepository.getReferenceById(requestId), getItems(requestId));
+        return RequestMapper.toDto(requestRepository.getReferenceById(requestId), getItems(requestId));
     }
 
     @SneakyThrows

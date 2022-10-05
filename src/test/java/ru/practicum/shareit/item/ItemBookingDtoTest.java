@@ -17,7 +17,7 @@ public class ItemBookingDtoTest {
     @Test
     void testItemDto() throws Exception {
         ItemBookingDto itemBookingDto = new ItemBookingDto(
-                1l,
+                1L,
                 "name",
                 "description",
                 true,

@@ -27,7 +27,7 @@ public class UserDtoTest {
     @Test
     public void testUserDto() throws Exception {
         UserDto userDto = new UserDto(
-                1l,
+                1L,
                 "name",
                 "email@ya.ru"
         );

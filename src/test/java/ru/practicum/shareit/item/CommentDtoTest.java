@@ -18,7 +18,7 @@ public class CommentDtoTest {
     @Test
     void testItemDto() throws Exception {
         CommentDto commentDto = new CommentDto(
-                1l,
+                1L,
                 "text",
                 null,
                 "name",

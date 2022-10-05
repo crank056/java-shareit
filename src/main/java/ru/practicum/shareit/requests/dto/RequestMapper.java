@@ -8,7 +8,7 @@ import java.util.List;
 
 public class RequestMapper {
 
-    public static ItemRequestDto ToDto(ItemRequest itemRequest, List<ItemDto> itemsDto) {
+    public static ItemRequestDto toDto(ItemRequest itemRequest, List<ItemDto> itemsDto) {
         return new ItemRequestDto(
                 itemRequest.getId(),
                 itemRequest.getDescription(),

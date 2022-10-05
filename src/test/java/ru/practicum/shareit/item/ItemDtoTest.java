@@ -17,7 +17,7 @@ public class ItemDtoTest {
     @Test
     void testItemDto() throws Exception {
         ItemDto itemDto = new ItemDto(
-                1l,
+                1L,
                 "name",
                 "description",
                 true,
