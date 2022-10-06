@@ -156,6 +156,16 @@ public class BookingServiceTest {
         list = bookingService.getBookingsFromUserId(user2Id, BookingState.ALL.toString(), 0, 20);
         assertEquals(1, list.size());
         assertEquals(BookingMapper.toBookingDto(bookingRepository.getReferenceById(bookingId)), list.get(0));
+        list = bookingService.getBookingsFromUserId(user2Id, BookingState.CURRENT.toString(), 0, 20);
+        assertEquals(0, list.size());
+        list = bookingService.getBookingsFromUserId(user2Id, BookingState.PAST.toString(), 0, 20);
+        assertEquals(1, list.size());
+        list = bookingService.getBookingsFromUserId(user2Id, BookingState.FUTURE.toString(), 0, 20);
+        assertEquals(0, list.size());
+        list = bookingService.getBookingsFromUserId(user2Id, BookingState.WAITING.toString(), 0, 20);
+        assertEquals(0, list.size());
+        list = bookingService.getBookingsFromUserId(user2Id, BookingState.REJECTED.toString(), 0, 20);
+        assertEquals(0, list.size());
     }
 
     @Test
@@ -168,11 +178,26 @@ public class BookingServiceTest {
         assertThrows(ValidationException.class, () -> bookingService.getBookingsFromOwnerId(
                 userId, BookingState.UNSUPPORTED_STATUS.toString(), 0, 20));
         itemRepository.save(item);
-        Long user2Id = userRepository.save(user2).getId();
         Long bookingId = bookingRepository.save(booking2).getId();
+        userRepository.save(user2);
         List<BookingDto> list = bookingService.getBookingsFromOwnerId(
                 userId, BookingState.ALL.toString(), 0, 20);
         assertEquals(1, list.size());
         assertEquals(BookingMapper.toBookingDto(bookingRepository.getReferenceById(bookingId)), list.get(0));
+        list = bookingService.getBookingsFromOwnerId(
+            userId, BookingState.CURRENT.toString(), 0, 20);
+        assertEquals(0, list.size());
+        list = bookingService.getBookingsFromOwnerId(
+            userId, BookingState.FUTURE.toString(), 0, 20);
+        assertEquals(0, list.size());
+        list = bookingService.getBookingsFromOwnerId(
+            userId, BookingState.PAST.toString(), 0, 20);
+        assertEquals(1, list.size());
+        list = bookingService.getBookingsFromOwnerId(
+            userId, BookingState.REJECTED.toString(), 0, 20);
+        assertEquals(0, list.size());
+        list = bookingService.getBookingsFromOwnerId(
+            userId, BookingState.WAITING.toString(), 0, 20);
+        assertEquals(0, list.size());
     }
 }
