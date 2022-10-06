@@ -78,7 +78,7 @@ public class BookingServiceTest {
                 new BookingItemDto(null, LocalDateTime.now().plusDays(1), LocalDateTime.now(),
                         1L, 1L, Status.WAITING)));
         assertThrows(WrongIdException.class, () -> bookingService.createBooking(1000L,
-                new BookingItemDto(null, LocalDateTime.now(), LocalDateTime.now().plusDays(1),
+                new BookingItemDto(null, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
                         1L, 1L, Status.WAITING)));
         item.setIsAvailable(false);
         Long userId = userRepository.save(user).getId();
