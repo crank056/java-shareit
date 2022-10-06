@@ -84,12 +84,12 @@ public class BookingServiceTest {
         Long userId = userRepository.save(user).getId();
         Long itemId = itemRepository.save(item).getId();
         assertThrows(AvailableException.class, () -> bookingService.createBooking(userId,
-                new BookingItemDto(null, LocalDateTime.now(), LocalDateTime.now().plusDays(1),
+                new BookingItemDto(null, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
                         itemId, userId, Status.WAITING)));
         item.setIsAvailable(true);
         long savedItemId = itemRepository.save(item).getId();
         assertThrows(AccessException.class, () -> bookingService.createBooking(userId,
-                new BookingItemDto(null, LocalDateTime.now(), LocalDateTime.now().plusDays(1),
+                new BookingItemDto(null, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
                         savedItemId, userId, Status.WAITING)));
         booking.setStart(LocalDateTime.now().plusDays(1));
         booking.setEnd(LocalDateTime.now().plusDays(2));
