@@ -47,13 +47,13 @@ public class ItemRequestController {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleValidateException(final ValidationException e) {
+    private Map<String, String> handleValidateException(final ValidationException e) {
         return Map.of("Ошибка валидации", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleNullEmailException(final WrongIdException e) {
+    private Map<String, String> handleNullEmailException(final WrongIdException e) {
         return Map.of("Пользователь отсутствует", e.getMessage());
     }
 }

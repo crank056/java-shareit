@@ -70,31 +70,31 @@ public class BookingController {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleAvailableException(final AvailableException e) {
+    private Map<String, String> handleAvailableException(final AvailableException e) {
         return Map.of("Ошибка доступа", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, String> handleAvailableException(final WrongIdException e) {
+    private Map<String, String> handleWrongIdException(final WrongIdException e) {
         return Map.of("Ошибка запроса", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleAvailableException(final NotFoundException e) {
+    private Map<String, String> handleNotFoundException(final NotFoundException e) {
         return Map.of("Ошибка поиска", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleAvailableException(final ValidationException e) {
+    private ErrorResponse handleValidationException(final ValidationException e) {
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleAvailableException(final AccessException e) {
+    private Map<String, String> handleAccessException(final AccessException e) {
         return Map.of("Ошибка доступа", e.getMessage());
     }
 }

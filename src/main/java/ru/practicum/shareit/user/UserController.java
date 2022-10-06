@@ -4,9 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exceptions.NullEmailException;
 import ru.practicum.shareit.exceptions.ValidationException;
-import ru.practicum.shareit.exceptions.WrongEmailException;
 import ru.practicum.shareit.exceptions.WrongIdException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
@@ -57,31 +55,19 @@ public class UserController {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleWrongIdException(final WrongIdException e) {
+    private Map<String, String> handleWrongIdException(final WrongIdException e) {
         return Map.of("Объект с таким Id не найден", e.getMessage());
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, String> handleWrongEmailException(final WrongEmailException e) {
-        return Map.of("Неверный формат email", e.getMessage());
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleNullEmailException(final NullEmailException e) {
-        return Map.of("Неверный email", e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleValidationException(final ValidationException e) {
+    private Map<String, String> handleValidationException(final ValidationException e) {
         return Map.of("Пользователь не прошел валидацию", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, String> handleRuntimeException(final RuntimeException e) {
+    private Map<String, String> handleRuntimeException(final RuntimeException e) {
         return Map.of("Возникло исключение", e.getMessage());
     }
 }

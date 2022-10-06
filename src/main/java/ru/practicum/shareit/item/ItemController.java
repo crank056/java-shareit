@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exceptions.AccessException;
-import ru.practicum.shareit.exceptions.NullItemFieldException;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.exceptions.WrongIdException;
 import ru.practicum.shareit.item.dto.*;
@@ -74,25 +73,19 @@ public class ItemController {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleNullEmailException(final WrongIdException e) {
+    private Map<String, String> handleNullEmailException(final WrongIdException e) {
         return Map.of("Пользователь вещи отсутствует", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleNullEmailException(final NullItemFieldException e) {
-        return Map.of("Пользователь вещи отсутствует", e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleValidateException(final ValidationException e) {
+    private Map<String, String> handleValidateException(final ValidationException e) {
         return Map.of("Вещь не прошла валидацию", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleAccessException(final AccessException e) {
+    private Map<String, String> handleAccessException(final AccessException e) {
         return Map.of("Ошибка доступа", e.getMessage());
     }
 }
