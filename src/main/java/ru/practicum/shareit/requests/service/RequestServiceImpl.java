@@ -62,7 +62,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @SneakyThrows
     public List<ItemRequestDto> getAllWithPagination(Long userId, Integer from, Integer size) {
-        if (from < 0 || size < 1) throw new ValidationException("Неверные значения формата");
+        validatePageSize(from, size);
         if (!userRepository.existsById(userId)) throw new WrongIdException("Пользователя не существует");
         Pageable page = PageRequest.of(from / size, size, Sort.by("created").ascending());
         List<ItemRequestDto> itemRequestDto = new ArrayList<>();
@@ -79,6 +79,10 @@ public class RequestServiceImpl implements RequestService {
         getUserFromId(userId);
         if (!requestRepository.existsById(requestId)) throw new WrongIdException("Запрос отсутствует");
         return RequestMapper.toDto(requestRepository.getReferenceById(requestId), getItems(requestId));
+    }
+
+    private void validatePageSize(int from, int size) throws ValidationException {
+        if (from < 0 || size < 1) throw new ValidationException("Неверные значения формата");
     }
 
     @SneakyThrows

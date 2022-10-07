@@ -95,7 +95,7 @@ public class BookingServiceImpl implements BookingService {
             throws ValidationException, WrongIdException {
         List<Booking> bookings;
         if (!userRepository.existsById(userId)) throw new WrongIdException("Пользователя несуществует");
-        if (from < 0 || size < 1) throw new ValidationException("Неверные значения формата");
+        validatePageSize(from, size);
         Pageable page;
         switch (BookingState.valueOf(state)) {
             case ALL:
@@ -147,7 +147,7 @@ public class BookingServiceImpl implements BookingService {
             throws WrongIdException, ValidationException {
         List<Booking> bookings;
         if (!userRepository.existsById(userId)) throw new WrongIdException("Пользователя несуществует");
-        if (from < 0 || size < 1) throw new ValidationException("Неверные значения формата");
+        validatePageSize(from, size);
         Pageable page;
         User owner = userRepository.getReferenceById(userId);
         switch (BookingState.valueOf(state)) {
@@ -203,5 +203,9 @@ public class BookingServiceImpl implements BookingService {
             throw new ValidationException(("Дата окончания в прошлом"));
         if (bookingItemDto.getEnd().isBefore(bookingItemDto.getStart()))
             throw new ValidationException("Дата окончания раньше даты начала");
+    }
+
+    private void validatePageSize(int from, int size) throws ValidationException {
+        if (from < 0 || size < 1) throw new ValidationException("Неверные значения формата");
     }
 }

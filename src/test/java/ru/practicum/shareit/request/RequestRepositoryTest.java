@@ -23,7 +23,7 @@ public class RequestRepositoryTest {
     @Autowired
     private TestEntityManager testEntityManager;
     @Autowired
-    RequestRepository requestRepository;
+    private RequestRepository requestRepository;
     private User user;
     private User user2;
     private Item item;

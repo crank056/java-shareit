@@ -27,15 +27,15 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 public class RequestServiceTest {
     @Autowired
-    RequestServiceImpl requestService;
+    private RequestServiceImpl requestService;
     @Autowired
-    RequestRepository requestRepository;
+    private RequestRepository requestRepository;
     @Autowired
-    UserRepository userRepository;
-    Item item;
-    User user;
-    User user2;
-    ItemRequest itemRequest;
+    private UserRepository userRepository;
+    private Item item;
+    private User user;
+    private User user2;
+    private ItemRequest itemRequest;
 
     @BeforeEach
     void setUp() {

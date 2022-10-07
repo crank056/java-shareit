@@ -97,10 +97,11 @@ public class ItemServiceImpl implements ItemService {
         return itemBookingDto;
     }
 
-    public List<ItemBookingDto> getAllItemsFromUserId(Long id, int from, int size) throws WrongIdException, ValidationException {
+    public List<ItemBookingDto> getAllItemsFromUserId(Long id, int from, int size)
+        throws WrongIdException, ValidationException {
         if (!userRepository.existsById(id)) throw new WrongIdException("Пользователь не существует");
         List<ItemBookingDto> userItemsDto = new ArrayList<>();
-        if (from < 0 || size < 1) throw new ValidationException("Неверные значения формата");
+        validatePageSize(from, size);
         Pageable page = PageRequest.of(from / size, size, Sort.by("id").ascending());
         for (Item item : itemRepository.findAllByOwnerOrderByIdAsc(userRepository.getReferenceById(id), page)) {
             List<Comment> comments = commentRepository.findAllByItemOrderByCreatedAsc(item);
@@ -119,7 +120,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     public List<ItemDto> getItemsFromKeyWord(String text, int from, int size) throws ValidationException {
-        if (from < 0 || size < 1) throw new ValidationException("Неверные значения формата");
+        validatePageSize(from, size);
         Pageable page = PageRequest.of(from / size, size, Sort.by("id").ascending());
         if (text.isEmpty() && text.isBlank()) {
             return new ArrayList<>();
@@ -138,6 +139,10 @@ public class ItemServiceImpl implements ItemService {
             throw new ValidationException("Имя отсутствует");
         if (itemDto.getDescription() == null || itemDto.getDescription().isBlank()
                 || itemDto.getDescription().isEmpty()) throw new ValidationException("Отстутствует описание");
+    }
+
+    private void validatePageSize(int from, int size) throws ValidationException {
+        if (from < 0 || size < 1) throw new ValidationException("Неверные значения формата");
     }
 
     public CommentDto addComment(Comment comment, Long itemId, Long userId)

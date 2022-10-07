@@ -34,20 +34,20 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 public class ItemServiceTest {
     @Autowired
-    ItemServiceImpl itemService;
+    private ItemServiceImpl itemService;
     @Autowired
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    BookingRepository bookingRepository;
-    Item item;
-    Item item2;
-    ItemDto itemDto;
-    User user;
-    ItemRequest itemRequest;
-    Comment comment;
-    Booking booking;
+    private BookingRepository bookingRepository;
+    private Item item;
+    private Item item2;
+    private ItemDto itemDto;
+    private User user;
+    private ItemRequest itemRequest;
+    private Comment comment;
+    private Booking booking;
 
     @BeforeEach
     void setUp() {

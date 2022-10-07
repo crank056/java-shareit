@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @SneakyThrows
     public UserDto update(long userId, UserDto userDto) {
-        if (userDto == null) throw new ValidationException("Нет объекта");
+        existDto(userDto);
         if (!userRepository.existsById(userId)) throw new WrongIdException("Нет такого пользователя");
         User user = UserMapper.toUser(findById(userId));
         if (userDto.getName() != null && !userDto.getName().isBlank()) {
@@ -81,6 +81,10 @@ public class UserServiceImpl implements UserService {
         if (userDto.getEmail() == null || userDto.getEmail().isEmpty() || !userDto.getEmail().contains("@")) {
             throw new ValidationException("Неверный формат email");
         }
+    }
+
+    private void existDto(UserDto userDto) throws ValidationException {
+        if (userDto == null) throw new ValidationException("Нет объекта");
     }
 }
 

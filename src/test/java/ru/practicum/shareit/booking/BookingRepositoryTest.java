@@ -96,12 +96,16 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    void findAllByBookerIdAndStatusTest() {
+    void findAllByBookerIdAndStatusWaitingTest() {
         list = bookingRepository.findAllByBookerIdAndStatus(booker.getId(), Status.WAITING, page);
         assertEquals(3, list.size());
         assertEquals(itemFuture.getId(), list.get(0).getItem().getId());
         assertEquals(itemCurrent.getId(), list.get(1).getItem().getId());
         assertEquals(itemPast.getId(), list.get(2).getItem().getId());
+    }
+
+    @Test
+    void findAllByBookerIdAndStatusApprovedTest() {
         list = bookingRepository.findAllByBookerIdAndStatus(booker.getId(), Status.APPROVED, page);
         assertEquals(0, list.size());
     }
@@ -128,12 +132,16 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    void findAllByItemOwnerAndStatusTest() {
+    void findAllByItemOwnerAndStatusWaitingTest() {
         list = bookingRepository.findAllByItemOwnerAndStatus(owner, Status.WAITING, page);
         assertEquals(3, list.size());
         assertEquals(itemFuture.getId(), list.get(0).getItem().getId());
         assertEquals(itemCurrent.getId(), list.get(1).getItem().getId());
         assertEquals(itemPast.getId(), list.get(2).getItem().getId());
+    }
+
+    @Test
+    void findAllByItemOwnerAndStatusApprovedTest() {
         list = bookingRepository.findAllByItemOwnerAndStatus(owner, Status.APPROVED, page);
         assertEquals(0, list.size());
     }

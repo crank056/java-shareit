@@ -30,21 +30,21 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 public class BookingServiceTest {
     @Autowired
-    BookingServiceImpl bookingService;
+    private BookingServiceImpl bookingService;
     @Autowired
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    BookingRepository bookingRepository;
-    Item item;
-    Item item2;
-    User user;
-    User user2;
-    ItemRequest itemRequest;
-    Comment comment;
-    Booking booking;
-    Booking booking2;
+    private BookingRepository bookingRepository;
+    private Item item;
+    private Item item2;
+    private User user;
+    private User user2;
+    private ItemRequest itemRequest;
+    private Comment comment;
+    private Booking booking;
+    private Booking booking2;
 
     @BeforeEach
     void setUp() {
