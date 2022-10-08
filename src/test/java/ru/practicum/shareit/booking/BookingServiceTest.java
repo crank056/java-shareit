@@ -122,7 +122,7 @@ public class BookingServiceTest {
     }
 
     @Test
-    void updateBookingWrongBookingIdTest(){
+    void updateBookingWrongBookingIdTest() {
         assertThrows(WrongIdException.class, () -> bookingService.updateBooking(
             1L, 100L, true));
     }
