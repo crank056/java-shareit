@@ -33,42 +33,63 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void testFindAll() {
-        List<UserDto> users = userService.findAll();
-        assertEquals(0, users.size());
+    void findAllTest() {
         User savedUser = userRepository.save(user);
-        users = userService.findAll();
+        List<UserDto> users = userService.findAll();
         assertEquals(1, users.size());
         assertEquals(userRepository.getReferenceById(savedUser.getId()).getName(), user.getName());
         assertEquals(userRepository.getReferenceById(savedUser.getId()).getEmail(), user.getEmail());
     }
 
     @Test
-    void testFindById() {
+    void findByWrongId() {
         assertThrows(WrongIdException.class, () -> userService.findById(1L));
+    }
+
+    @Test
+    void testFindById() {
         UserDto savedUser = UserMapper.toUserDto(userRepository.save(user));
         assertEquals(userService.findById(savedUser.getId()), savedUser);
     }
 
     @Test
-    void createTest() {
+    void createTestWrongName() {
         assertThrows(ValidationException.class, () -> userService.create(
-                new UserDto(null, null, "email@ya.ru")));
+            new UserDto(null, null, "email@ya.ru")));
+    }
+
+    @Test
+    void createNullUserTest() {
         assertThrows(ValidationException.class, () -> userService.create(null));
+    }
+
+    @Test
+    void createWrongEmailTest() {
         assertThrows(ValidationException.class, () -> userService.create(new UserDto(
-                null, "Name", "email")));
+            null, "Name", "email")));
+    }
+
+    @Test
+    void createTest() {
         UserDto savedUser = userService.create(UserMapper.toUserDto(user));
         assertEquals(user.getEmail(), savedUser.getEmail());
         assertEquals(user.getName(), savedUser.getName());
     }
 
     @Test
-    void updateTest() {
+    void updateNullDtoTest() {
         assertThrows(ValidationException.class, () -> userService.update(1L, null));
+    }
+
+    @Test
+    void updateWrongUserIdTest() {
         assertThrows(WrongIdException.class, () -> userService.update(
-                1L, new UserDto(null, "update", "update@ya.ru")));
+            1L, new UserDto(null, "update", "update@ya.ru")));
+    }
+
+    @Test
+    void updateTest() {
         User savedUser = userRepository.save(user);
-        assertThrows(ValidationException.class, () -> userService.update(savedUser.getId(), null));
         userService.update(savedUser.getId(), new UserDto(null, "update", "update@ya.ru"));
         UserDto updatedUser = userService.findById(savedUser.getId());
         assertEquals(savedUser.getId(), updatedUser.getId());
@@ -77,11 +98,14 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void deleteTest() {
+    void deleteWrongUserIdTest() {
         assertThrows(WrongIdException.class, () -> userService.delete(1L));
+    }
+
+    @Test
+    void deleteTest() {
         Long savedUserId = userRepository.save(user).getId();
-        assertNotNull(userRepository.getReferenceById(savedUserId));
         userService.delete(savedUserId);
-        assertThrows(WrongIdException.class, () -> userService.delete(savedUserId));
+        assertFalse(userRepository.existsById(savedUserId));
     }
 }

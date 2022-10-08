@@ -17,7 +17,6 @@ import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
-import ru.practicum.shareit.requests.ItemRequest;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.userStorage.UserRepository;
 import ru.practicum.shareit.util.Status;
@@ -45,14 +44,12 @@ public class ItemServiceTest {
     private Item item2;
     private ItemDto itemDto;
     private User user;
-    private ItemRequest itemRequest;
     private Comment comment;
     private Booking booking;
 
     @BeforeEach
     void setUp() {
         user = new User(null, "name", "ya@ya.ru");
-        itemRequest = new ItemRequest(null, "desc", user, LocalDateTime.now());
         item = new Item(null, "name", "desc", true, user, null);
         item2 = new Item(null, "name", "desc", true, user, null);
         booking = new Booking(
@@ -63,28 +60,58 @@ public class ItemServiceTest {
     }
 
     @Test
-    void addItemTest() throws ValidationException, WrongIdException {
+    void addItemWrongUserIdTest() {
         assertThrows(WrongIdException.class, () -> itemService.addItem(ItemMapper.toItemDto(item), 1L));
+    }
+
+    @Test
+    void addItemNotAvailableTest() {
         Long userId = userRepository.save(user).getId();
         assertThrows(ValidationException.class, () -> itemService.addItem(
-                new ItemDto(null, "name", "desc", null, userId, null), userId));
+            new ItemDto(null, "name", "desc", null, userId, null), userId));
+    }
+
+    @Test
+    void addItemNullNameTest() {
+        Long userId = userRepository.save(user).getId();
         assertThrows(ValidationException.class, () -> itemService.addItem(
-                new ItemDto(null, null, "desc", null, userId, null), userId));
+            new ItemDto(null, null, "desc", true, userId, null), userId));
+    }
+
+    @Test
+    void addItemNullDescTest() {
+        Long userId = userRepository.save(user).getId();
         assertThrows(ValidationException.class, () -> itemService.addItem(
-                new ItemDto(null, "name", null, null, userId, null), userId));
+            new ItemDto(null, "name", null, true, userId, null), userId));
+    }
+
+    @Test
+    void addItemTest() throws ValidationException, WrongIdException {
+        Long userId = userRepository.save(user).getId();
         itemDto = itemService.addItem(ItemMapper.toItemDto(item), userId);
         assertNotNull(itemDto);
         assertEquals(item.getName(), itemDto.getName());
     }
 
     @Test
-    void refreshItemTest() throws ValidationException, WrongIdException {
+    void refreshItemWrongItemIdTest() {
         Long userId = userRepository.save(user).getId();
         assertThrows(WrongIdException.class, () -> itemService.refreshItem(
-                ItemMapper.toItemDto(item), 1L, userId));
+            ItemMapper.toItemDto(item), 1L, userId));
+    }
+
+    @Test
+    void refreshItemWrongUserIdTest() throws ValidationException, WrongIdException {
+        Long userId = userRepository.save(user).getId();
         Long itemId = itemService.addItem(ItemMapper.toItemDto(item), userId).getId();
         assertThrows(WrongIdException.class, () -> itemService.refreshItem(
-                ItemMapper.toItemDto(item), itemId, 100L));
+            ItemMapper.toItemDto(item), itemId, 100L));
+    }
+
+    @Test
+    void refreshItemTest() throws ValidationException, WrongIdException {
+        Long userId = userRepository.save(user).getId();
+        Long itemId = itemService.addItem(ItemMapper.toItemDto(item), userId).getId();
         itemDto = itemService.refreshItem(
                 new ItemDto(null, "newName", "newDesc", null, null, null),
                 itemId, userId);
@@ -94,20 +121,35 @@ public class ItemServiceTest {
     }
 
     @Test
-    void getItemFromIdTest() throws WrongIdException, ValidationException {
+    void getItemFromWrongItemIdTest() {
         Long userId = userRepository.save(user).getId();
         assertThrows(WrongIdException.class, () -> itemService.getItemFromId(userId, 1L));
+    }
+
+    @Test
+    void getItemFromItemIdTest() throws WrongIdException, ValidationException {
+        Long userId = userRepository.save(user).getId();
         Long itemId = itemService.addItem(ItemMapper.toItemDto(item), userId).getId();
-        assertNotNull(itemService.getItemFromId(userId, itemId));
-        assertEquals(itemService.getItemFromId(userId, itemId).getName(), item.getName());
+        ItemBookingDto itemBookingDto = itemService.getItemFromId(userId, itemId);
+        assertNotNull(itemBookingDto);
+        assertEquals(itemBookingDto.getName(), item.getName());
+    }
+
+    @Test
+    void getItemsFromWrongUserIdTest() {
+        assertThrows(WrongIdException.class, () -> itemService.getAllItemsFromUserId(1L, 1, 20));
+    }
+
+    @Test
+    void getItemsFromUserIdWrongSizeTest() {
+        Long userId = userRepository.save(user).getId();
+        assertThrows(ValidationException.class,
+            () -> itemService.getAllItemsFromUserId(userId, -1, 0));
     }
 
     @Test
     void getItemFromUserIdTest() throws ValidationException, WrongIdException {
-        assertThrows(WrongIdException.class, () -> itemService.getAllItemsFromUserId(1L, 1, 20));
         Long userId = userRepository.save(user).getId();
-        assertThrows(ValidationException.class, () -> itemService.getAllItemsFromUserId(userId, -1, 0));
-        assertEquals(0, itemService.getAllItemsFromUserId(userId, 0, 20).size());
         itemService.addItem(ItemMapper.toItemDto(item), userId);
         itemService.addItem(ItemMapper.toItemDto(item2), userId);
         List<ItemBookingDto> list = itemService.getAllItemsFromUserId(userId, 0, 20);
@@ -116,9 +158,15 @@ public class ItemServiceTest {
     }
 
     @Test
+    void getItemFromKeyWordWrongSizeTest() {
+        userRepository.save(user);
+        assertThrows(ValidationException.class,
+            () -> itemService.getItemsFromKeyWord("decs", -1, 0));
+    }
+
+    @Test
     void getItemsFromKeWordTest() throws ValidationException, WrongIdException {
         Long userId = userRepository.save(user).getId();
-        assertThrows(ValidationException.class, () -> itemService.getAllItemsFromUserId(userId, -1, 0));
         itemService.addItem(ItemMapper.toItemDto(item), userId);
         List<ItemDto> list = itemService.getItemsFromKeyWord("desc", 0, 20);
         assertEquals(1, list.size());
@@ -126,15 +174,31 @@ public class ItemServiceTest {
     }
 
     @Test
-    void addCommentTest() throws ValidationException, WrongIdException, AccessException {
+    void addCommentEmptyTest() {
         Long userId = userRepository.save(user).getId();
         Long itemId = itemRepository.save(item).getId();
         bookingRepository.save(booking);
         User user2 = userRepository.save(new User(null, "name", "yaya@ya.ru"));
         assertThrows(ValidationException.class, () -> itemService.addComment(
-                new Comment(null, "", item, user, LocalDateTime.now()), itemId, userId));
+            new Comment(null, "", item, user, LocalDateTime.now()), itemId, userId));
+    }
+
+    @Test
+    void addCommentNotOwnerTest() {
+        userRepository.save(user);
+        Long itemId = itemRepository.save(item).getId();
+        bookingRepository.save(booking);
+        User user2 = userRepository.save(new User(null, "name", "yaya@ya.ru"));
         assertThrows(AccessException.class, () -> itemService.addComment(
             new Comment(null, "text", item, user2, LocalDateTime.now()), itemId, user2.getId()));
+    }
+
+    @Test
+    void addCommentTest() throws ValidationException, AccessException {
+        Long userId = userRepository.save(user).getId();
+        Long itemId = itemRepository.save(item).getId();
+        bookingRepository.save(booking);
+        userRepository.save(new User(null, "name", "yaya@ya.ru"));
         assertEquals(comment.getText(), itemService.addComment(comment, itemId, userId).getText());
     }
 }

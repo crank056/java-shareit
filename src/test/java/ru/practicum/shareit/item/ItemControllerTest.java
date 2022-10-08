@@ -77,7 +77,6 @@ public class ItemControllerTest {
     @Test
     void addCommentTest() throws Exception {
         when(itemService.addComment(any(), anyLong(), anyLong())).thenReturn(commentDto);
-
         mvc.perform(post("/items/1/comment")
                         .header("X-Sharer-User-Id", "1")
                         .content(mapper.writeValueAsString(commentDto))
@@ -94,7 +93,6 @@ public class ItemControllerTest {
     @Test
     void refreshItemTest() throws Exception {
         when(itemService.refreshItem(any(), anyLong(), anyLong())).thenReturn(itemDto);
-
         mvc.perform(patch("/items/1")
                         .header("X-Sharer-User-Id", "1")
                         .content(mapper.writeValueAsString(itemDto))
@@ -112,7 +110,6 @@ public class ItemControllerTest {
     @Test
     void getItemFromIdTest() throws Exception {
         when(itemService.getItemFromId(anyLong(), anyLong())).thenReturn(itemBookingDto);
-
         mvc.perform(get("/items/1")
                         .header("X-Sharer-User-Id", "1")
                         .accept(MediaType.APPLICATION_JSON))
@@ -127,7 +124,6 @@ public class ItemControllerTest {
     @Test
     void getAllItemFromUserIdTest() throws Exception {
         when(itemService.getAllItemsFromUserId(anyLong(), anyInt(), anyInt())).thenReturn(List.of(itemBookingDto));
-
         mvc.perform(get("/items/")
                         .header("X-Sharer-User-Id", "1")
                         .param("from", "1")
@@ -144,7 +140,6 @@ public class ItemControllerTest {
     @Test
     void getItemsFromKeyWord() throws Exception {
         when(itemService.getItemsFromKeyWord(anyString(), anyInt(), anyInt())).thenReturn(List.of(itemDto));
-
         mvc.perform(get("/items/search?text=text")
                         .header("X-Sharer-User-Id", "1")
                         .param("from", "1")

@@ -46,23 +46,45 @@ public class RequestServiceTest {
     }
 
     @Test
-    void addRequest() {
+    void addRequestNullTest() {
         assertThrows(ValidationException.class, () -> requestService.addRequest(1L, null));
+    }
+
+    @Test
+    void addRequestNullDescTest() {
         Long userId = userRepository.save(user).getId();
         ItemRequestDto itemRequestDto = new ItemRequestDto(
-                null, null, userId, LocalDateTime.now(), List.of(ItemMapper.toItemDto(item)));
+            null, null, userId, LocalDateTime.now(), List.of(ItemMapper.toItemDto(item)));
         assertThrows(ValidationException.class, () -> requestService.addRequest(userId, itemRequestDto));
-        itemRequestDto.setDescription("desc");
+    }
+
+    @Test
+    void addRequestWrongUserTest() {
+        Long userId = userRepository.save(user).getId();
+        ItemRequestDto itemRequestDto = new ItemRequestDto(
+            null, "desc", userId, LocalDateTime.now(), List.of(ItemMapper.toItemDto(item)));
         assertThrows(WrongIdException.class, () -> requestService.addRequest(1000L, itemRequestDto));
+    }
+
+    @Test
+    void addRequest() {
+        Long userId = userRepository.save(user).getId();
+        ItemRequestDto itemRequestDto = new ItemRequestDto(
+                null, "desc", userId, LocalDateTime.now(), List.of(ItemMapper.toItemDto(item)));
         ItemRequestDto itemRequestDtoSaved = requestService.addRequest(userId, itemRequestDto);
         assertNotNull(itemRequestDtoSaved);
         assertEquals(itemRequestDto.getRequesterId(), itemRequestDtoSaved.getRequesterId());
     }
 
     @Test
+    void getAllRequestFromWrongUserIdTest() {
+        assertThrows(WrongIdException.class, () -> requestService.getAllRequests(1000L));
+    }
+
+
+    @Test
     void getAllRequestTest() {
         Long userId = userRepository.save(user).getId();
-        assertThrows(WrongIdException.class, () -> requestService.getAllRequests(1000L));
         Long requestId = requestRepository.save(itemRequest).getId();
         List<ItemRequestDto> itemRequestDtos = requestService.getAllRequests(userId);
         assertNotNull(itemRequestDtos);
@@ -70,11 +92,20 @@ public class RequestServiceTest {
     }
 
     @Test
-    void getAllWithPaginationTest() {
+    void getAllWithPaginationWrongSizeTest() {
         Long userId = userRepository.save(user).getId();
-        Long user2Id = userRepository.save(user2).getId();
         assertThrows(ValidationException.class, () -> requestService.getAllWithPagination(userId, -1, 0));
+    }
+
+    @Test
+    void getAllWithPaginationWrongUserIdTest() {
         assertThrows(WrongIdException.class, () -> requestService.getAllWithPagination(1000L, 0, 20));
+    }
+
+    @Test
+    void getAllWithPaginationTest() {
+        userRepository.save(user);
+        Long user2Id = userRepository.save(user2).getId();
         Long requestId = requestRepository.save(itemRequest).getId();
         List<ItemRequestDto> itemRequestDtos = requestService.getAllWithPagination(user2Id, 0, 20);
         assertNotNull(itemRequestDtos);
@@ -82,11 +113,22 @@ public class RequestServiceTest {
     }
 
     @Test
+    void getRequestFromIdWrongUserTest() {
+        userRepository.save(user);
+        Long requestId = requestRepository.save(itemRequest).getId();
+        assertThrows(WrongIdException.class, () -> requestService.getRequestFromId(1000L, requestId));
+    }
+
+    @Test
+    void getRequestFromWrongIdTest() {
+        Long userId = userRepository.save(user).getId();
+        assertThrows(WrongIdException.class, () -> requestService.getRequestFromId(userId, 1000L));
+    }
+
+    @Test
     void getRequestFromIdTest() throws WrongIdException {
         Long userId = userRepository.save(user).getId();
         Long requestId = requestRepository.save(itemRequest).getId();
-        assertThrows(WrongIdException.class, () -> requestService.getRequestFromId(1000L, requestId));
-        assertThrows(WrongIdException.class, () -> requestService.getRequestFromId(userId, 1000L));
         ItemRequestDto itemRequestDto = requestService.getRequestFromId(userId, requestId);
         assertNotNull(itemRequestDto);
         assertEquals(requestId, itemRequestDto.getId());
