@@ -8,21 +8,20 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Comment;
-import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
 
 @Service
 public interface ItemService {
-    Item addItem(ItemDto itemDto, Long userId) throws WrongIdException, ValidationException;
+    ItemDto addItem(ItemDto itemDto, Long userId) throws WrongIdException, ValidationException;
 
-    Item refreshItem(ItemDto itemDto, Long id, Long userId) throws WrongIdException, ValidationException;
+    ItemDto refreshItem(ItemDto itemDto, Long id, Long userId) throws WrongIdException, ValidationException;
 
     ItemBookingDto getItemFromId(Long userId, Long id) throws WrongIdException;
 
-    List<ItemBookingDto> getAllItemsFromUserId(Long id) throws WrongIdException;
+    List<ItemBookingDto> getAllItemsFromUserId(Long id, int from, int size) throws WrongIdException, ValidationException;
 
-    List<ItemDto> getItemsFromKeyWord(String text);
+    List<ItemDto> getItemsFromKeyWord(String text, int from, int size) throws ValidationException;
 
     CommentDto addComment(Comment comment, Long itemId, Long userId) throws AccessException, ValidationException;
 }

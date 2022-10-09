@@ -1,7 +1,9 @@
 package ru.practicum.shareit.booking.service;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
@@ -37,9 +39,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @SneakyThrows
     @Transactional
-    public BookingDto createBooking(Long userId, BookingItemDto bookingItemDto) {
+    public BookingDto createBooking(Long userId, BookingItemDto bookingItemDto)
+            throws ValidationException, WrongIdException, AvailableException, AccessException, NotFoundException {
         validateBooking(bookingItemDto);
         if (!userRepository.existsById(userId)) throw new WrongIdException("Пользователь несуществует");
         if (!itemRepository.existsById(bookingItemDto.getItemId())) throw new NotFoundException("Вещь не найдена");
@@ -59,8 +61,10 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto updateBooking(Long userId, Long bookingId, Boolean approved)
-            throws AccessException, ValidationException {
+            throws AccessException, ValidationException, WrongIdException {
+        if (!bookingRepository.existsById(bookingId)) throw new WrongIdException("Бронирования не существует!");
         Booking booking = bookingRepository.getReferenceById(bookingId);
+        if (!userRepository.existsById(userId)) throw new WrongIdException("Пользователя не существует");
         if (!itemRepository.getReferenceById(
                 bookingRepository.getReferenceById(
                         bookingId).getItem().getId()).getOwner().getId().equals(userId))
@@ -73,7 +77,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDto getBookingFromId(Long userId, Long bookingId) throws AccessException, NotFoundException {
+    public BookingDto getBookingFromId(Long userId, Long bookingId) throws AccessException, NotFoundException, WrongIdException {
+        if (!userRepository.existsById(userId)) throw new WrongIdException("Нет такого пользователя");
         if (!bookingRepository.existsById(bookingId)) throw new NotFoundException("Бронь отсутствует");
         Booking booking = bookingRepository.getReferenceById(bookingId);
         Long ownerId = itemRepository.getReferenceById(booking.getItem().getId()).getOwner().getId();
@@ -86,37 +91,45 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getBookingsFromUserId(Long userId, String state)
+    public List<BookingDto> getBookingsFromUserId(Long userId, String state, int from, int size)
             throws ValidationException, WrongIdException {
-        List<Booking> bookings = new ArrayList<>();
+        List<Booking> bookings;
         if (!userRepository.existsById(userId)) throw new WrongIdException("Пользователя несуществует");
+        validatePageSize(from, size);
+        Pageable page;
         switch (BookingState.valueOf(state)) {
             case ALL:
-                bookings = bookingRepository.findAllByBookerId(userId);
+                page = PageRequest.of(from / size, size, Sort.by("start").descending());
+                bookings = bookingRepository.findAllByBookerId(userId, page);
                 break;
             case CURRENT:
+                page = PageRequest.of(from / size, size, Sort.by("start").descending());
                 bookings = bookingRepository.findAllByBookerIdInCurrent(
-                        userId, LocalDateTime.now(), LocalDateTime.now()
+                        userId, LocalDateTime.now(), LocalDateTime.now(), page
                 );
                 break;
             case PAST:
-                bookings = bookingRepository.findAllByBookerIdInPast(
-                        userId, LocalDateTime.now()
+                page = PageRequest.of(from / size, size, Sort.by("start").descending());
+                bookings = bookingRepository.findAllByBookerIdInPastWithPage(
+                        userId, LocalDateTime.now(), page
                 );
                 break;
             case FUTURE:
+                page = PageRequest.of(from / size, size, Sort.by("start").descending());
                 bookings = bookingRepository.findAllByBookerIdInFuture(
-                        userId, LocalDateTime.now(), LocalDateTime.now()
+                        userId, LocalDateTime.now(), LocalDateTime.now(), page
                 );
                 break;
             case WAITING:
+                page = PageRequest.of(from / size, size, Sort.by("start").ascending());
                 bookings = bookingRepository.findAllByBookerIdAndStatus(
-                        userId, Status.WAITING
+                        userId, Status.WAITING, page
                 );
                 break;
             case REJECTED:
+                page = PageRequest.of(from / size, size, Sort.by("start").ascending());
                 bookings = bookingRepository.findAllByBookerIdAndStatus(
-                        userId, Status.REJECTED
+                        userId, Status.REJECTED, page
                 );
                 break;
             default:
@@ -130,38 +143,46 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getBookingsFromOwnerId(Long userId, String state)
+    public List<BookingDto> getBookingsFromOwnerId(Long userId, String state, int from, int size)
             throws WrongIdException, ValidationException {
-        List<Booking> bookings = new ArrayList<>();
-        User owner = userRepository.getReferenceById(userId);
+        List<Booking> bookings;
         if (!userRepository.existsById(userId)) throw new WrongIdException("Пользователя несуществует");
+        validatePageSize(from, size);
+        Pageable page;
+        User owner = userRepository.getReferenceById(userId);
         switch (BookingState.valueOf(state)) {
             case ALL:
-                bookings = bookingRepository.findAllByOwner(owner);
+                page = PageRequest.of(from / size, size, Sort.by("start").descending());
+                bookings = bookingRepository.findAllByOwner(owner, page);
                 break;
             case CURRENT:
+                page = PageRequest.of(from / size, size, Sort.by("start").descending());
                 bookings = bookingRepository.findAllByItemOwnerInCurrent(
-                        owner, LocalDateTime.now(), LocalDateTime.now()
+                        owner, LocalDateTime.now(), LocalDateTime.now(), page
                 );
                 break;
             case PAST:
-                bookings = bookingRepository.findAllByItemOwnerInPast(
-                        owner, LocalDateTime.now()
+                page = PageRequest.of(from / size, size, Sort.by("start").descending());
+                bookings = bookingRepository.findAllByItemOwnerInPastWithPage(
+                        owner, LocalDateTime.now(), page
                 );
                 break;
             case FUTURE:
+                page = PageRequest.of(from / size, size, Sort.by("start").descending());
                 bookings = bookingRepository.findAllByItemOwnerInFuture(
-                        owner, LocalDateTime.now(), LocalDateTime.now()
+                        owner, LocalDateTime.now(), LocalDateTime.now(), page
                 );
                 break;
             case WAITING:
+                page = PageRequest.of(from / size, size, Sort.by("start").ascending());
                 bookings = bookingRepository.findAllByItemOwnerAndStatus(
-                        owner, Status.WAITING
+                        owner, Status.WAITING, page
                 );
                 break;
             case REJECTED:
+                page = PageRequest.of(from / size, size, Sort.by("start").ascending());
                 bookings = bookingRepository.findAllByItemOwnerAndStatus(
-                        owner, Status.REJECTED
+                        owner, Status.REJECTED, page
                 );
                 break;
             default:
@@ -182,5 +203,9 @@ public class BookingServiceImpl implements BookingService {
             throw new ValidationException(("Дата окончания в прошлом"));
         if (bookingItemDto.getEnd().isBefore(bookingItemDto.getStart()))
             throw new ValidationException("Дата окончания раньше даты начала");
+    }
+
+    private void validatePageSize(int from, int size) throws ValidationException {
+        if (from < 0 || size < 1) throw new ValidationException("Неверные значения формата");
     }
 }

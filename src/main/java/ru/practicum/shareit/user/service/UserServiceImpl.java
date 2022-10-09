@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user.service;
 
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.exceptions.WrongIdException;
@@ -30,7 +31,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto findById(long userId) throws WrongIdException {
+    @SneakyThrows
+    public UserDto findById(long userId) {
         User user = null;
         if (userRepository.findById(userId).isPresent()) {
             user = userRepository.findById(userId).get();
@@ -39,13 +41,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto create(UserDto userDto) throws ValidationException {
+    public UserDto create(UserDto userDto) {
         validateUser(userDto);
         return UserMapper.toUserDto(userRepository.save(UserMapper.toUser(userDto)));
     }
 
     @Override
-    public UserDto update(long userId, UserDto userDto) throws WrongIdException, ValidationException {
+    @SneakyThrows
+    public UserDto update(long userId, UserDto userDto) {
+        existDto(userDto);
+        if (!userRepository.existsById(userId)) throw new WrongIdException("Нет такого пользователя");
         User user = UserMapper.toUser(findById(userId));
         if (userDto.getName() != null && !userDto.getName().isBlank()) {
             user.setName(userDto.getName());
@@ -58,12 +63,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @SneakyThrows
     public boolean delete(long userId) {
+        if (!userRepository.existsById(userId)) throw new WrongIdException("Нет такого пользователя");
         userRepository.deleteById(userId);
         return userRepository.existsById(userId);
     }
 
-    private void validateUser(UserDto userDto) throws ValidationException {
+    @SneakyThrows
+    private void validateUser(UserDto userDto) {
         if (userDto == null) {
             throw new ValidationException("");
         }
@@ -73,6 +81,10 @@ public class UserServiceImpl implements UserService {
         if (userDto.getEmail() == null || userDto.getEmail().isEmpty() || !userDto.getEmail().contains("@")) {
             throw new ValidationException("Неверный формат email");
         }
+    }
+
+    private void existDto(UserDto userDto) throws ValidationException {
+        if (userDto == null) throw new ValidationException("Нет объекта");
     }
 }
 

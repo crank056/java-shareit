@@ -7,7 +7,7 @@ public class CommentMapper {
         return new CommentDto(
                 comment.getId(),
                 comment.getText(),
-                comment.getItem(),
+                comment.getItem().getId(),
                 comment.getUser().getName(),
                 comment.getCreated()
         );

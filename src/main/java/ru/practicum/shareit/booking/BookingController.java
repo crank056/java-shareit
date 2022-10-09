@@ -27,7 +27,8 @@ public class BookingController {
     @PostMapping
     public BookingDto createBooking(
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @RequestBody BookingItemDto bookingItemDto) throws ValidationException, AvailableException {
+            @RequestBody BookingItemDto bookingItemDto)
+            throws ValidationException, AvailableException, AccessException, WrongIdException, NotFoundException {
         log.info("Запрос POST /bookings получен, объект: {}", bookingItemDto);
         return bookingService.createBooking(userId, bookingItemDto);
     }
@@ -43,53 +44,57 @@ public class BookingController {
     @GetMapping(value = "/{bookingId}")
     public BookingDto getBookingFromId(
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @PathVariable Long bookingId) throws AccessException, NotFoundException {
+            @PathVariable Long bookingId) throws AccessException, NotFoundException, WrongIdException {
         return bookingService.getBookingFromId(userId, bookingId);
     }
 
     @GetMapping
     public List<BookingDto> getUserBookingsWithStatus(
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @RequestParam(value = "state", required = false, defaultValue = "ALL") String state)
+            @RequestParam(value = "state", required = false, defaultValue = "ALL") String state,
+            @RequestParam(required = false, defaultValue = "0") int from,
+            @RequestParam(required = false, defaultValue = "20") int size)
             throws ValidationException, WrongIdException {
-        return bookingService.getBookingsFromUserId(userId, state);
+        return bookingService.getBookingsFromUserId(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getAllUserBookings(
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @RequestParam(value = "state", required = false, defaultValue = "ALL") String state)
+            @RequestParam(value = "state", required = false, defaultValue = "ALL") String state,
+            @RequestParam(required = false, defaultValue = "0") int from,
+            @RequestParam(required = false, defaultValue = "20") int size)
             throws ValidationException, WrongIdException {
-        return bookingService.getBookingsFromOwnerId(userId, state);
+        return bookingService.getBookingsFromOwnerId(userId, state, from, size);
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleAvailableException(final AvailableException e) {
+    private Map<String, String> handleAvailableException(final AvailableException e) {
         return Map.of("Ошибка доступа", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, String> handleAvailableException(final WrongIdException e) {
+    private Map<String, String> handleWrongIdException(final WrongIdException e) {
         return Map.of("Ошибка запроса", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleAvailableException(final NotFoundException e) {
+    private Map<String, String> handleNotFoundException(final NotFoundException e) {
         return Map.of("Ошибка поиска", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleAvailableException(final ValidationException e) {
+    private ErrorResponse handleValidationException(final ValidationException e) {
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleAvailableException(final AccessException e) {
+    private Map<String, String> handleAccessException(final AccessException e) {
         return Map.of("Ошибка доступа", e.getMessage());
     }
 }

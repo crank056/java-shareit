@@ -2,6 +2,9 @@ package ru.practicum.shareit.item.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
@@ -15,6 +18,8 @@ import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.Repository.ItemRepository;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.requests.ItemRequest;
+import ru.practicum.shareit.requests.RequestRepository;
 import ru.practicum.shareit.user.userStorage.UserRepository;
 
 import java.time.LocalDateTime;
@@ -28,31 +33,38 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final RequestRepository requestRepository;
 
     @Autowired
     public ItemServiceImpl(
             ItemRepository itemRepository,
             UserRepository userRepository,
             BookingRepository bookingRepository,
-            CommentRepository commentRepository) {
+            CommentRepository commentRepository, RequestRepository requestRepository) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
         this.commentRepository = commentRepository;
+        this.requestRepository = requestRepository;
     }
 
-    public Item addItem(ItemDto itemDto, Long userId) throws WrongIdException, ValidationException {
+    public ItemDto addItem(ItemDto itemDto, Long userId) throws WrongIdException, ValidationException {
         validateItem(itemDto);
-        Item item = ItemMapper.toItem(itemDto);
+        ItemRequest request = null;
+        if (itemDto.getRequestId() != null) {
+            request = requestRepository.getReferenceById(itemDto.getRequestId());
+        }
+        Item item = ItemMapper.toItem(itemDto, userRepository.getReferenceById(userId), request);
         if (userId == null) throw new WrongIdException("Не передан id пользователя");
         if (!userRepository.existsById(userId)) throw new WrongIdException("Нет такого пользователя");
         item.setOwner(userRepository.getReferenceById(userId));
         log.info("Получен объект item в сервисе, объект: {}", item);
-        return itemRepository.save(item);
+        return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
-    public Item refreshItem(ItemDto itemDto, Long id, Long userId)
+    public ItemDto refreshItem(ItemDto itemDto, Long id, Long userId)
             throws WrongIdException, ValidationException {
+        if (!itemRepository.existsById(id)) throw new WrongIdException("Нет такой вещи");
         Item item = itemRepository.getReferenceById(id);
         if (!itemRepository.getReferenceById(id).getOwner().getId().equals(userId))
             throw new WrongIdException("Неверный id хозяина вещи");
@@ -60,10 +72,10 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getName() != null) item.setName(itemDto.getName());
         if (itemDto.getDescription() != null) item.setDescription(itemDto.getDescription());
         if (itemDto.getAvailable() != null) item.setIsAvailable(itemDto.getAvailable());
-        if (itemDto.getOwner() != null) item.setOwner(itemDto.getOwner());
-        if (itemDto.getRequest() != null) item.setRequest(itemDto.getRequest());
+        if (itemDto.getOwnerId() != null) item.setOwner(userRepository.getReferenceById(userId));
+        if (itemDto.getRequestId() != null) item.setRequest(requestRepository.getReferenceById(itemDto.getId()));
         validateItem(ItemMapper.toItemDto(item));
-        return itemRepository.save(item);
+        return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
     public ItemBookingDto getItemFromId(Long userId, Long id) throws WrongIdException {
@@ -85,10 +97,13 @@ public class ItemServiceImpl implements ItemService {
         return itemBookingDto;
     }
 
-    public List<ItemBookingDto> getAllItemsFromUserId(Long id) throws WrongIdException {
+    public List<ItemBookingDto> getAllItemsFromUserId(Long id, int from, int size)
+        throws WrongIdException, ValidationException {
         if (!userRepository.existsById(id)) throw new WrongIdException("Пользователь не существует");
         List<ItemBookingDto> userItemsDto = new ArrayList<>();
-        for (Item item : itemRepository.findAllByOwnerOrderByIdAsc(userRepository.getReferenceById(id))) {
+        validatePageSize(from, size);
+        Pageable page = PageRequest.of(from / size, size, Sort.by("id").ascending());
+        for (Item item : itemRepository.findAllByOwnerOrderByIdAsc(userRepository.getReferenceById(id), page)) {
             List<Comment> comments = commentRepository.findAllByItemOrderByCreatedAsc(item);
             List<CommentDto> commentsDto = new ArrayList<>();
             for (Comment comment : comments) {
@@ -104,15 +119,16 @@ public class ItemServiceImpl implements ItemService {
         return userItemsDto;
     }
 
-    public List<ItemDto> getItemsFromKeyWord(String text) {
-        List<Item> items = itemRepository.findAll();
+    public List<ItemDto> getItemsFromKeyWord(String text, int from, int size) throws ValidationException {
+        validatePageSize(from, size);
+        Pageable page = PageRequest.of(from / size, size, Sort.by("id").ascending());
+        if (text.isEmpty() && text.isBlank()) {
+            return new ArrayList<>();
+        }
+        List<Item> items = itemRepository.findFromKeyWord(text, page);
         List<ItemDto> itemsDto = new ArrayList<>();
         for (Item item : items) {
-            if (item.getDescription().toLowerCase().contains(text.toLowerCase()) && !text.isBlank()) {
-                if (item.getIsAvailable()) {
-                    itemsDto.add(ItemMapper.toItemDto(item));
-                }
-            }
+            itemsDto.add(ItemMapper.toItemDto(item));
         }
         return itemsDto;
     }
@@ -125,13 +141,21 @@ public class ItemServiceImpl implements ItemService {
                 || itemDto.getDescription().isEmpty()) throw new ValidationException("Отстутствует описание");
     }
 
+    private void validatePageSize(int from, int size) throws ValidationException {
+        if (from < 0 || size < 1) throw new ValidationException("Неверные значения формата");
+    }
+
     public CommentDto addComment(Comment comment, Long itemId, Long userId)
             throws AccessException, ValidationException {
         if (comment.getText().isBlank() || comment.getText().isEmpty())
             throw new ValidationException("Комментарий не может быть пустым");
-        List<Booking> bookings = bookingRepository.findAllByBookerIdInPast(
-                userId, LocalDateTime.now());
-        if (bookings.size() == 0) throw new AccessException("Вы не брали вещь в аренду");
+        List<Booking> bookings = bookingRepository.findAllByBookerAndEndBeforeOrderByStartDesc(
+                userRepository.getReferenceById(userId), LocalDateTime.now());
+        Boolean booker = false;
+        for (Booking booking: bookings) {
+            if (booking.getItem().getId().equals(itemId)) booker = true;
+        }
+        if (!booker) throw new AccessException("Вы не брали вещь в аренду");
         comment.setItem(itemRepository.getReferenceById(itemId));
         comment.setUser(userRepository.getReferenceById(userId));
         comment.setCreated(LocalDateTime.now());
