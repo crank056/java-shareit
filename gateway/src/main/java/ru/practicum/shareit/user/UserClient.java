@@ -8,6 +8,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.client.BaseClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserDtoValid;
 
 @Service
@@ -27,7 +28,7 @@ public class UserClient extends BaseClient {
         return post("/", userDto);
     }
 
-    public ResponseEntity<Object> refreshUser(UserDtoValid userDto, long id) {
+    public ResponseEntity<Object> refreshUser(UserDto userDto, long id) {
         return patch("/" + id, userDto);
     }
 

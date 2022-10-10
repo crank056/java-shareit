@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserDtoValid;
 
 import javax.validation.Valid;
@@ -23,9 +24,9 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> refreshUser(@RequestBody @Valid UserDtoValid userDtoValid,
+    public ResponseEntity<Object> refreshUser(@RequestBody @Valid UserDto userDto,
                                               @PathVariable long id) {
-        return userClient.refreshUser(userDtoValid, id);
+        return userClient.refreshUser(userDto, id);
     }
 
     @DeleteMapping("/{id}")

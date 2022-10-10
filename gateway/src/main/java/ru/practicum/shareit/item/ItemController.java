@@ -6,15 +6,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.booking.dto.BookItemRequestDto;
-import ru.practicum.shareit.booking.dto.BookingState;
 import ru.practicum.shareit.item.dto.CommentDtoValid;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoValid;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
-import java.awt.print.Pageable;
+
 
 @Controller
 @RequestMapping(path = "/items")
@@ -39,9 +38,9 @@ public class ItemController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<Object> refreshItem(@RequestHeader("X-Sharer-User-Id") long userId,
-                                              @RequestBody @Valid ItemDtoValid itemDtoValid,
+                                              @RequestBody @Valid ItemDto itemDto,
                                               @PathVariable Long id) {
-        return itemClient.refreshItem(userId, id, itemDtoValid);
+        return itemClient.refreshItem(userId, id, itemDto);
     }
 
     @GetMapping("/{id}")

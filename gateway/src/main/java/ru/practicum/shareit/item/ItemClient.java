@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.item.dto.CommentDtoValid;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoValid;
 
 import java.util.Map;
@@ -29,10 +30,11 @@ public class ItemClient extends BaseClient {
     }
 
     public ResponseEntity<Object> addComment(Long userId, Long itemId, CommentDtoValid commentDto) {
-        return post("/" + itemId + "/comment", userId, commentDto);
+        String path = String.format("/%s/comment", itemId);
+        return post(path, userId, commentDto);
     }
 
-    public ResponseEntity<Object> refreshItem(Long userId, Long id, ItemDtoValid itemDto) {
+    public ResponseEntity<Object> refreshItem(Long userId, Long id, ItemDto itemDto) {
         return patch("/" + id, userId, itemDto);
     }
 
