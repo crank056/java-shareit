@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.practicum.shareit.exceptions.ValidationException;
+
 import ru.practicum.shareit.exceptions.WrongIdException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
@@ -53,32 +53,10 @@ public class UserServiceImplTest {
     }
 
     @Test
-    void createTestWrongName() {
-        assertThrows(ValidationException.class, () -> userService.create(
-            new UserDto(null, null, "email@ya.ru")));
-    }
-
-    @Test
-    void createNullUserTest() {
-        assertThrows(ValidationException.class, () -> userService.create(null));
-    }
-
-    @Test
-    void createWrongEmailTest() {
-        assertThrows(ValidationException.class, () -> userService.create(new UserDto(
-            null, "Name", "email")));
-    }
-
-    @Test
     void createTest() {
         UserDto savedUser = userService.create(UserMapper.toUserDto(user));
         assertEquals(user.getEmail(), savedUser.getEmail());
         assertEquals(user.getName(), savedUser.getName());
-    }
-
-    @Test
-    void updateNullDtoTest() {
-        assertThrows(ValidationException.class, () -> userService.update(1L, null));
     }
 
     @Test

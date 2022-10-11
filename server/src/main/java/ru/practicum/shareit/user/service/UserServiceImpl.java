@@ -2,7 +2,6 @@ package ru.practicum.shareit.user.service;
 
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.exceptions.WrongIdException;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -42,14 +41,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto create(UserDto userDto) {
-        validateUser(userDto);
         return UserMapper.toUserDto(userRepository.save(UserMapper.toUser(userDto)));
     }
 
     @Override
     @SneakyThrows
     public UserDto update(long userId, UserDto userDto) {
-        existDto(userDto);
         if (!userRepository.existsById(userId)) throw new WrongIdException("Нет такого пользователя");
         User user = UserMapper.toUser(findById(userId));
         if (userDto.getName() != null && !userDto.getName().isBlank()) {
@@ -58,7 +55,6 @@ public class UserServiceImpl implements UserService {
         if (userDto.getEmail() != null && !userDto.getEmail().isBlank()) {
             user.setEmail(userDto.getEmail());
         }
-        validateUser(UserMapper.toUserDto(user));
         return UserMapper.toUserDto(userRepository.save(user));
     }
 
@@ -68,23 +64,6 @@ public class UserServiceImpl implements UserService {
         if (!userRepository.existsById(userId)) throw new WrongIdException("Нет такого пользователя");
         userRepository.deleteById(userId);
         return userRepository.existsById(userId);
-    }
-
-    @SneakyThrows
-    private void validateUser(UserDto userDto) {
-        if (userDto == null) {
-            throw new ValidationException("");
-        }
-        if (userDto.getName() == null || userDto.getName().isEmpty()) {
-            throw new ValidationException("Имя пользователя не может быть пустым");
-        }
-        if (userDto.getEmail() == null || userDto.getEmail().isEmpty() || !userDto.getEmail().contains("@")) {
-            throw new ValidationException("Неверный формат email");
-        }
-    }
-
-    private void existDto(UserDto userDto) throws ValidationException {
-        if (userDto == null) throw new ValidationException("Нет объекта");
     }
 }
 

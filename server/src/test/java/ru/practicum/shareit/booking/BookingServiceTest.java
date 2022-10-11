@@ -57,32 +57,6 @@ public class BookingServiceTest {
     }
 
     @Test
-    void createBookingNullValidExceptionTest() {
-        assertThrows(ValidationException.class, () -> bookingService.createBooking(1L, null));
-    }
-
-    @Test
-    void createBookingInPastTest() {
-        assertThrows(ValidationException.class, () -> bookingService.createBooking(1L,
-            new BookingItemDto(null, LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(1),
-                1L, 1L, Status.WAITING)));
-    }
-
-    @Test
-    void createBookingEndInPastTest() {
-        assertThrows(ValidationException.class, () -> bookingService.createBooking(1L,
-            new BookingItemDto(null, LocalDateTime.now(), LocalDateTime.now().minusDays(1),
-                1L, 1L, Status.WAITING)));
-    }
-
-    @Test
-    void createBookingEndBeforeStartTest() {
-        assertThrows(ValidationException.class, () -> bookingService.createBooking(1L,
-            new BookingItemDto(null, LocalDateTime.now().plusDays(1), LocalDateTime.now(),
-                1L, 1L, Status.WAITING)));
-    }
-
-    @Test
     void createBookingWrongUserIdTest() {
         assertThrows(WrongIdException.class, () -> bookingService.createBooking(1000L,
             new BookingItemDto(null, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
@@ -110,7 +84,7 @@ public class BookingServiceTest {
 
     @Test
     void createBookingTest()
-        throws ValidationException, AccessException, WrongIdException, NotFoundException, AvailableException {
+        throws AccessException, WrongIdException, NotFoundException, AvailableException {
         booking.setStart(LocalDateTime.now().plusDays(1));
         booking.setEnd(LocalDateTime.now().plusDays(2));
         userRepository.save(user);
@@ -208,13 +182,6 @@ public class BookingServiceTest {
     }
 
     @Test
-    void getFromUserIdWrongSizeTest() {
-        Long userId = userRepository.save(user).getId();
-        assertThrows(ValidationException.class, () -> bookingService.getBookingsFromUserId(
-            userId, BookingState.ALL.toString(), -1, 0));
-    }
-
-    @Test
     void getFromUserIdWrongStatusTest() {
         Long userId = userRepository.save(user).getId();
         assertThrows(ValidationException.class, () -> bookingService.getBookingsFromUserId(
@@ -287,13 +254,6 @@ public class BookingServiceTest {
     void getFromWrongOwnerIdTest() {
         assertThrows(WrongIdException.class, () -> bookingService.getBookingsFromOwnerId(
             1L, "ALL", 0, 20));
-    }
-
-    @Test
-    void getFromOwnerIdWrongSizeTest() {
-        Long userId = userRepository.save(user).getId();
-        assertThrows(ValidationException.class, () -> bookingService.getBookingsFromOwnerId(
-            userId, BookingState.ALL.toString(), -1, 0));
     }
 
     @Test

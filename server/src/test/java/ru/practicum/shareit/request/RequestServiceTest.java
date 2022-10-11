@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.exceptions.WrongIdException;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -46,19 +45,6 @@ public class RequestServiceTest {
     }
 
     @Test
-    void addRequestNullTest() {
-        assertThrows(ValidationException.class, () -> requestService.addRequest(1L, null));
-    }
-
-    @Test
-    void addRequestNullDescTest() {
-        Long userId = userRepository.save(user).getId();
-        ItemRequestDto itemRequestDto = new ItemRequestDto(
-            null, null, userId, LocalDateTime.now(), List.of(ItemMapper.toItemDto(item)));
-        assertThrows(ValidationException.class, () -> requestService.addRequest(userId, itemRequestDto));
-    }
-
-    @Test
     void addRequestWrongUserTest() {
         Long userId = userRepository.save(user).getId();
         ItemRequestDto itemRequestDto = new ItemRequestDto(
@@ -89,12 +75,6 @@ public class RequestServiceTest {
         List<ItemRequestDto> itemRequestDtos = requestService.getAllRequests(userId);
         assertNotNull(itemRequestDtos);
         assertEquals(requestId, itemRequestDtos.get(0).getId());
-    }
-
-    @Test
-    void getAllWithPaginationWrongSizeTest() {
-        Long userId = userRepository.save(user).getId();
-        assertThrows(ValidationException.class, () -> requestService.getAllWithPagination(userId, -1, 0));
     }
 
     @Test

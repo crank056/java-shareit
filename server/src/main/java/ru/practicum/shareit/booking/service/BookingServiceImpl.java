@@ -41,8 +41,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingDto createBooking(Long userId, BookingItemDto bookingItemDto)
-            throws ValidationException, WrongIdException, AvailableException, AccessException, NotFoundException {
-        validateBooking(bookingItemDto);
+            throws WrongIdException, AvailableException, AccessException, NotFoundException {
         if (!userRepository.existsById(userId)) throw new WrongIdException("Пользователь несуществует");
         if (!itemRepository.existsById(bookingItemDto.getItemId())) throw new NotFoundException("Вещь не найдена");
         if (!itemRepository.getReferenceById(bookingItemDto.getItemId()).getIsAvailable())
@@ -77,7 +76,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDto getBookingFromId(Long userId, Long bookingId) throws AccessException, NotFoundException, WrongIdException {
+    public BookingDto getBookingFromId(Long userId, Long bookingId)
+        throws AccessException, NotFoundException, WrongIdException {
         if (!userRepository.existsById(userId)) throw new WrongIdException("Нет такого пользователя");
         if (!bookingRepository.existsById(bookingId)) throw new NotFoundException("Бронь отсутствует");
         Booking booking = bookingRepository.getReferenceById(bookingId);
@@ -95,7 +95,6 @@ public class BookingServiceImpl implements BookingService {
             throws ValidationException, WrongIdException {
         List<Booking> bookings;
         if (!userRepository.existsById(userId)) throw new WrongIdException("Пользователя несуществует");
-        validatePageSize(from, size);
         Pageable page;
         switch (BookingState.valueOf(state)) {
             case ALL:
@@ -147,7 +146,6 @@ public class BookingServiceImpl implements BookingService {
             throws WrongIdException, ValidationException {
         List<Booking> bookings;
         if (!userRepository.existsById(userId)) throw new WrongIdException("Пользователя несуществует");
-        validatePageSize(from, size);
         Pageable page;
         User owner = userRepository.getReferenceById(userId);
         switch (BookingState.valueOf(state)) {
@@ -193,19 +191,5 @@ public class BookingServiceImpl implements BookingService {
             bookingsDto.add(BookingMapper.toBookingDto(booking));
         }
         return bookingsDto;
-    }
-
-    private void validateBooking(BookingItemDto bookingItemDto) throws ValidationException {
-        if (bookingItemDto == null) throw new ValidationException("Бронирование не передано");
-        if (bookingItemDto.getStart().isBefore(LocalDateTime.now()))
-            throw new ValidationException("Дата старта в прошлом");
-        if (bookingItemDto.getEnd().isBefore(LocalDateTime.now()))
-            throw new ValidationException(("Дата окончания в прошлом"));
-        if (bookingItemDto.getEnd().isBefore(bookingItemDto.getStart()))
-            throw new ValidationException("Дата окончания раньше даты начала");
-    }
-
-    private void validatePageSize(int from, int size) throws ValidationException {
-        if (from < 0 || size < 1) throw new ValidationException("Неверные значения формата");
     }
 }

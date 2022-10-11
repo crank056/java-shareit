@@ -68,7 +68,8 @@ public class ItemController {
     public List<ItemDto> getItemsFromKeyWord(@RequestParam String text,
                                              @RequestHeader("X-Sharer-User-Id") Long userId,
                                              @RequestParam(required = false, defaultValue = "0") int from,
-                                             @RequestParam(required = false, defaultValue = "20") int size) throws ValidationException {
+                                             @RequestParam(required = false, defaultValue = "20") int size)
+        throws ValidationException {
         return itemService.getItemsFromKeyWord(text, from, size);
     }
 

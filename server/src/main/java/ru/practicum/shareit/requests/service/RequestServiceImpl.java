@@ -5,7 +5,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.exceptions.WrongIdException;
 import ru.practicum.shareit.item.Repository.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -40,7 +39,6 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @SneakyThrows
     public ItemRequestDto addRequest(Long userId, ItemRequestDto itemRequestDto) {
-        validateRequest(itemRequestDto);
         if (!userRepository.existsById(userId)) throw new WrongIdException("Пользователя не существует");
         User requester = getUserFromId(userId);
         itemRequestDto.setCreated(LocalDateTime.now());
@@ -62,7 +60,6 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @SneakyThrows
     public List<ItemRequestDto> getAllWithPagination(Long userId, Integer from, Integer size) {
-        validatePageSize(from, size);
         if (!userRepository.existsById(userId)) throw new WrongIdException("Пользователя не существует");
         Pageable page = PageRequest.of(from / size, size, Sort.by("created").ascending());
         List<ItemRequestDto> itemRequestDto = new ArrayList<>();
@@ -79,10 +76,6 @@ public class RequestServiceImpl implements RequestService {
         getUserFromId(userId);
         if (!requestRepository.existsById(requestId)) throw new WrongIdException("Запрос отсутствует");
         return RequestMapper.toDto(requestRepository.getReferenceById(requestId), getItems(requestId));
-    }
-
-    private void validatePageSize(int from, int size) throws ValidationException {
-        if (from < 0 || size < 1) throw new ValidationException("Неверные значения формата");
     }
 
     @SneakyThrows
@@ -102,14 +95,5 @@ public class RequestServiceImpl implements RequestService {
             requester = userRepository.getReferenceById(userId);
         } else throw new WrongIdException("Пользователя с таким id не существует");
         return requester;
-    }
-
-    @SneakyThrows
-    private void validateRequest(ItemRequestDto itemRequestDto) {
-        if (itemRequestDto == null) throw new ValidationException("Объекта нет");
-        if (itemRequestDto.getDescription() == null ||
-                itemRequestDto.getDescription().isEmpty() ||
-                itemRequestDto.getDescription().isBlank())
-            throw new ValidationException("Нет описания");
     }
 }
