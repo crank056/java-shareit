@@ -20,7 +20,6 @@
 <br> Requirements:
 <br> Docker 20+
 <br> Docker-compose 2.10+
-<br> git clone git@github.com:crank056/java-explore-with-me.git
 <br> cd java-explore-with-me
 <br> mvn clean package
 <br> docker-compose up
