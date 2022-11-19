@@ -11,13 +11,6 @@
 ![alt text](https://camo.githubusercontent.com/bd4d35ddf431265afa34cad566bfce041be3c99c6a0582708c010fbe25238dac/68747470733a2f2f62616467656e2e6e65742f62616467652f69636f6e2f646f636b65723f69636f6e3d646f636b6572266c6162656c)
 ![alt text](https://camo.githubusercontent.com/6c75a5adc86ad62280ef996f44a2dbed9d6869833d1a75fc6dd23c78cc7b3626/68747470733a2f2f62616467656e2e6e65742f62616467652f69636f6e2f6769746875623f69636f6e3d676974687562266c6162656c)
 
-
-# Database schema of the main service and the statistics service
-![alt text](https://downloader.disk.yandex.ru/preview/939f1f27fd10d6b8652e820fa17f5bb7b93eb3635af585a6a4cb432ff46d9eee/6378c8f7/OCGF8SQuXWdCw1eE6UilzBTNJsYuKlIMW3GI9FGZxcSDSAt4iMQD46NTvFyd-KP-BZPFf7qCx44L-RU3KWS57Q%3D%3D?uid=0&filename=Untitled.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=0&tknv=v2&size=2048x2048)
-
-# Project architecture
-![alt text](https://downloader.disk.yandex.ru/preview/1a77e6aaeeebcdd32d796f038c0e99dc544d014215dbdfdc551971347769c5e6/6378cdb6/PczN84N9oIWu3VpQ-6EHIK5-7jZgm8jQMmlXHBrLQCpHJaSK91qyYU53VOAl4IpimEZpXMaVM0pEapHhpns2Hw%3D%3D?uid=0&filename=diagram%20%282%29.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&owner_uid=0&tknv=v2&size=2048x2048)
-
 <a href="https://github.com/crank056/java-shareit/blob/main/postman/sprint.json">Postman tests</a>
 
 
